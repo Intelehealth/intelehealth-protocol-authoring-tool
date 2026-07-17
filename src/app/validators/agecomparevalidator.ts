@@ -21,3 +21,19 @@ export const AgeCompareValidator: ValidatorFn = (
   // NOTE Valid
   return null;
 };
+
+export const RangeCompareValidator: ValidatorFn = (
+  control: AbstractControl
+): ValidationErrors | null => {
+  if (!control.get('txtRangeMin')?.value || !control.get('txtRangeMax')?.value) {
+    return null;
+  }
+
+  const rStart = control.get('txtRangeMin')?.value;
+  const rEnd = control.get('txtRangeMax')?.value;
+  const isValid = parseInt(rStart) < parseInt(rEnd);
+
+  if (!isValid) return { invalidRangeOrder: true };
+
+  return null;
+};

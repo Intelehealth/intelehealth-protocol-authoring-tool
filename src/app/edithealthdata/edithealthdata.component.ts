@@ -2,9 +2,10 @@ import { Component, OnInit, EventEmitter, Output, Input } from '@angular/core';
 import { IHealthData } from '../Interfaces/ihealth-data';
 import { Result, Ok, Err } from '@sniptt/monads';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
-import { AgeCompareValidator } from '../validators/agecomparevalidator';
+import { AgeCompareValidator, RangeCompareValidator } from '../validators/agecomparevalidator';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { IMindMapData } from '../Interfaces/mindmap-interface';
+import { MindmapService } from '../services/mindmap.service';
 @Component({
   selector: 'app-edithealthdata',
   templateUrl: './edithealthdata.component.html',
@@ -47,6 +48,8 @@ export class EdithealthdataComponent implements OnInit {
     ddIsExclusiveOption:"Select is this Exclusive Option",
     txtAgeMin: "Update Minimum Age",
     txtAgeMax: "Update Maximum Age",
+    txtRangeMin: "Enter Minimum Range",
+    txtRangeMax: "Enter Maximum Range",
   }
 
   myForm = new FormGroup(
@@ -80,14 +83,16 @@ export class EdithealthdataComponent implements OnInit {
       ddIsExclusiveOption:new FormControl(),
       txtAgeMin: new FormControl('txtAgeMin'),
       txtAgeMax: new FormControl('txtAgeMax'),
+      txtRangeMin: new FormControl(),
+      txtRangeMax: new FormControl('txtRangeMax'),
     },
 
-    { validators: AgeCompareValidator }
+    { validators: [AgeCompareValidator, RangeCompareValidator] }
   );
 
   positiveCondition: boolean = false;
   negativeCondition: boolean = false;
-  constructor( public modal: NgbActiveModal) {
+  constructor(public modal: NgbActiveModal, private mindmapService: MindmapService) {
     for (var i = 1; i <= 120; i++) {
       this.ages.push(i);
     }
@@ -113,6 +118,10 @@ export class EdithealthdataComponent implements OnInit {
       this.positiveCondition = false;
       this.negativeCondition = false;
     }
+  }
+
+  resetNodeRules() {
+    this.mindmapService.resetNodeRules(this.healthdata);
   }
 
   onSubmit() {

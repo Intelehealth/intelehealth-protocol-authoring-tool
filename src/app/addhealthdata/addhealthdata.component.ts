@@ -1,8 +1,9 @@
 import { Component, OnInit, EventEmitter, Output, Input } from '@angular/core';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
-import { AgeCompareValidator } from '../validators/agecomparevalidator';
+import { AgeCompareValidator, RangeCompareValidator } from '../validators/agecomparevalidator';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { IMindMapData } from '../Interfaces/mindmap-interface';
+import { MindmapService } from '../services/mindmap.service';
 @Component({
   selector: 'app-addhealthdata',
   templateUrl: './addhealthdata.component.html',
@@ -45,6 +46,8 @@ export class AddhealthdataComponent implements OnInit {
     ddIsExclusiveOption:"Select is this Exclusive Option",
     txtAgeMin: "Select Minimum Age",
     txtAgeMax: "Select Maximum Age",
+    txtRangeMin: "Enter Minimum Range",
+    txtRangeMax: "Enter Maximum Range",
   }
 
   myForm = new FormGroup(
@@ -78,13 +81,15 @@ export class AddhealthdataComponent implements OnInit {
       ddIsExclusiveOption:new FormControl(),
       txtAgeMin: new FormControl('txtAgeMin'),
       txtAgeMax: new FormControl('txtAgeMax'),
+      txtRangeMin: new FormControl(),
+      txtRangeMax: new FormControl('txtRangeMax'),
     },
 
-    { validators: AgeCompareValidator }
+    { validators: [AgeCompareValidator, RangeCompareValidator] }
   );
   positiveCondition: boolean = false;
   negativeCondition: boolean = false;
-  constructor(public modal: NgbActiveModal) {
+  constructor(public modal: NgbActiveModal, private mindmapService: MindmapService) {
     for (var i = 1; i <= 120; i++) {
       this.ages.push(i);
     }
@@ -100,6 +105,10 @@ export class AddhealthdataComponent implements OnInit {
       this.negativeCondition = false;
     }
   }
+  resetNodeRules() {
+    this.mindmapService.resetNodeRules(this.addData);
+  }
+
   onSubmit() {
     this.addData.id = Math.random().toString();
     this.onSave.emit(this.addData);

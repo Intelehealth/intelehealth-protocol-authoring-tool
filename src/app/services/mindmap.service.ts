@@ -40,6 +40,8 @@ export class MindmapService {
       item.gender = healthdata.gender;
       item.age_min = healthdata.age_min;
       item.age_max = healthdata.age_max;
+      item.range_min = healthdata.range_min;
+      item.range_max = healthdata.range_max;
       item.pos_condition = healthdata.pos_condition;
       item.neg_condition = healthdata.neg_condition;
       item.citation = healthdata.citation;
@@ -60,6 +62,24 @@ export class MindmapService {
     }
     return item;
   }
+  resetNodeRules(data: IMindMapData): void {
+    data.input_type = '';
+    data.gender = '';
+    data.age_min = undefined;
+    data.age_max = undefined;
+    data.isRequired = undefined;
+    data.multi_choice = undefined;
+    data.exclude_from_multi_choice = undefined;
+    data.display = '';
+    data.having_nested_question = undefined;
+    data.compare_duplicate_node = '';
+    data.enable_exclusive_option = undefined;
+    data.is_exclusive_option = undefined;
+    data.language = '';
+    data.range_min = undefined;
+    data.range_max = undefined;
+  }
+
   getHealthData(mmdata?: IMindMapData): IHealthData {
     let item: IHealthData = { text: '' };
     if (mmdata) {
@@ -84,6 +104,8 @@ export class MindmapService {
       item.gender = mmdata.gender;
       item.age_min = mmdata.age_min;
       item.age_max = mmdata.age_max;
+      item.range_min = mmdata.range_min;
+      item.range_max = mmdata.range_max;
       item.pos_condition = mmdata.pos_condition;
       item.neg_condition = mmdata.neg_condition;
       item.citation = mmdata.citation;

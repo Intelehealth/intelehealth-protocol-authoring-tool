@@ -20,6 +20,8 @@ export interface IHealthData {
   gender?: string;
   age_min?: number;
   age_max?: number;
+  range_min?: number;
+  range_max?: number;
   pos_condition?: string;
   neg_condition?: string;
   citation?: string;

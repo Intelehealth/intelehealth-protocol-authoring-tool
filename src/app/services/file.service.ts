@@ -27,6 +27,8 @@ export class FileService {
     gender: 'gender',
     'age-min': 'age_min',
     'age-max': 'age_max',
+    'range-min': 'range_min',
+    'range-max': 'range_max',
     'pos-condition': 'pos_condition',
     'neg-condition': 'neg_condition',
     citation: 'citation',
