@@ -1,5 +1,12 @@
+export interface IAgeRange {
+  year: number;
+  months: number;
+  value?: number;
+}
+
 export interface IMindMapData {
   id?: string;
+  index?: number;
   topic: string;
   perform_physical_exam?: string;
   display?: string;
@@ -12,14 +19,16 @@ export interface IMindMapData {
   is_exclusive_option?:boolean;
   display_or?: string;
   display_hi?: string;
+  display_mr?: string;
   pop_up?: string;
   pop_up_hi?: string;
   pop_up_or?: string;
+  pop_up_mr?: string;
   language?: string;
   input_type?: string;
   gender?: string;
-  age_min?: number;
-  age_max?: number;
+  age_min?: IAgeRange;
+  age_max?: IAgeRange;
   range_min?: number;
   range_max?: number;
   pos_condition?: string;
@@ -27,7 +36,7 @@ export interface IMindMapData {
   direction?: string;
   citation?: string;
   snomed?: string;
-  icd_10?: string;
+  icd_11?: string;
   loinc?: string;
   job_aid_type?: string;
   job_aid_file?: string;

@@ -2,7 +2,7 @@ import { Component, OnInit, EventEmitter, Output, Input } from '@angular/core';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { AgeCompareValidator, RangeCompareValidator } from '../validators/agecomparevalidator';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
-import { IMindMapData } from '../Interfaces/mindmap-interface';
+import { IAgeRange, IMindMapData } from '../Interfaces/mindmap-interface';
 import { MindmapService } from '../services/mindmap.service';
 @Component({
   selector: 'app-addhealthdata',
@@ -14,7 +14,6 @@ export class AddhealthdataComponent implements OnInit {
   addData: IMindMapData = {
     topic: 'Enter Text'
   };
-  ages: Array<number> = [];
 
   tooltips = {
     txtText: "Add Text",
@@ -23,9 +22,11 @@ export class AddhealthdataComponent implements OnInit {
     ddMultiChoice: "Select is this Multi Choice question?",
     txtDisplayOR: "Add Display Odiya Text",
     txtDisplayHI: "Add Display Hindi Text",
+    txtDisplayMR: "Add Display Marathi Text",
     txtpopup: "Add Popup English Text",
     txtpopuphi: "Add Popup Hindi Text",
     txtpopupor: "Add Popup Odiya Text",
+    txtpopupmr: "Add Popup Marathi Text",
     txtLanguage: "Add Language to be shown in history note",
     txtInputType: "Select Input Type",
     txtGender: "Select Gender",
@@ -34,7 +35,7 @@ export class AddhealthdataComponent implements OnInit {
     txtPPE: "Add Perform Physical Exam",
     txtcitation: "Add Citation",
     txtsnomed: "Add Snomed",
-    txticd: "Add ICD-10",
+    txticd: "Add ICD-11",
     txtloinc: "Add LOINC",
     txtjobaidtype: "Add Job Aid Type",
     txtjobaidfile: "Add Job Aid File",
@@ -44,8 +45,9 @@ export class AddhealthdataComponent implements OnInit {
     ddEnableExclusiveOption:"Select is this Enable Exclusive Option?",
     txtCompareDuplicateNode:"Add Compare duplicate Node Text",
     ddIsExclusiveOption:"Select is this Exclusive Option",
-    txtAgeMin: "Select Minimum Age",
-    txtAgeMax: "Select Maximum Age",
+    txtIndex: "Enter Question Index",
+    txtAgeMin: "Enter Minimum Age",
+    txtAgeMax: "Enter Maximum Age",
     txtRangeMin: "Enter Minimum Range",
     txtRangeMax: "Enter Maximum Range",
   }
@@ -58,9 +60,11 @@ export class AddhealthdataComponent implements OnInit {
       ddMultiChoice: new FormControl(),
       txtDisplayOR: new FormControl(),
       txtDisplayHI: new FormControl(),
+      txtDisplayMR: new FormControl(),
       txtpopup: new FormControl(),
       txtpopuphi: new FormControl(),
       txtpopupor: new FormControl(),
+      txtpopupmr: new FormControl(),
       txtLanguage: new FormControl(),
       txtInputType: new FormControl(),
       txtGender: new FormControl(),
@@ -79,23 +83,44 @@ export class AddhealthdataComponent implements OnInit {
       txtCompareDuplicateNode: new FormControl(),
       ddEnableExclusiveOption:new FormControl(),
       ddIsExclusiveOption:new FormControl(),
-      txtAgeMin: new FormControl('txtAgeMin'),
-      txtAgeMax: new FormControl('txtAgeMax'),
+      txtIndex: new FormControl(null),
+      txtAgeMin: new FormControl(null),
+      txtAgeMax: new FormControl(null),
       txtRangeMin: new FormControl(),
       txtRangeMax: new FormControl('txtRangeMax'),
     },
 
     { validators: [AgeCompareValidator, RangeCompareValidator] }
   );
+
   positiveCondition: boolean = false;
   negativeCondition: boolean = false;
-  constructor(public modal: NgbActiveModal, private mindmapService: MindmapService) {
-    for (var i = 1; i <= 120; i++) {
-      this.ages.push(i);
-    }
+  ageMinRaw: string = '';
+  ageMaxRaw: string = '';
+
+  decimalToAgeRange(decimalYears: number): IAgeRange {
+    const year = Math.floor(decimalYears);
+    const monthValue = (decimalYears - year) * 12;
+    const months = (monthValue - Math.floor(monthValue)) >= 0.5
+      ? Math.ceil(monthValue)
+      : Math.floor(monthValue);
+    return { year, months };
   }
 
+  onAgeMinChange(event: any) {
+    const val = parseFloat(event.target.value);
+    this.addData.age_min = !isNaN(val) ? { ...this.decimalToAgeRange(val), value: val } : undefined;
+  }
+
+  onAgeMaxChange(event: any) {
+    const val = parseFloat(event.target.value);
+    this.addData.age_max = !isNaN(val) ? { ...this.decimalToAgeRange(val), value: val } : undefined;
+  }
+
+  constructor(public modal: NgbActiveModal, private mindmapService: MindmapService) {}
+
   ngOnInit() {}
+
   onTextSelection(e: any) {
     if (e.target.value.toLowerCase() == 'Associated symptoms'.toLowerCase()) {
       this.positiveCondition = true;
@@ -105,8 +130,11 @@ export class AddhealthdataComponent implements OnInit {
       this.negativeCondition = false;
     }
   }
+
   resetNodeRules() {
     this.mindmapService.resetNodeRules(this.addData);
+    this.ageMinRaw = '';
+    this.ageMaxRaw = '';
   }
 
   onSubmit() {

@@ -7,6 +7,7 @@ import { IHealthData } from '../Interfaces/ihealth-data';
 export class FileService {
   private dataDictionary: any = {
     id: 'id',
+    index: 'index',
     text: 'text',
     'perform-physical-exam': 'perform_physical_exam',
     display: 'display',
@@ -19,9 +20,11 @@ export class FileService {
     'is-exclusive-option':'is_exclusive_option',
     'display-or': 'display_or',
     'display-hi': 'display_hi',
+    'display-mr': 'display_mr',
     'pop-up': 'pop_up',
     'pop-up-hi': 'pop_up_hi',
     'pop-up-or': 'pop_up_or',
+    'pop-up-mr': 'pop_up_mr',
     language: 'language',
     'input-type': 'input_type',
     gender: 'gender',
@@ -33,7 +36,7 @@ export class FileService {
     'neg-condition': 'neg_condition',
     citation: 'citation',
     snomed: 'snomed',
-    'icd-10': 'icd_10',
+    'icd-11': 'icd_11',
     loinc: 'loinc',
     'job-aid-type': 'job_aid_type',
     'job-aid-file': 'job_aid_file',

@@ -13,7 +13,7 @@ export const AgeCompareValidator: ValidatorFn = (
   // NOTE Compare fields
   const mStart = control.get('txtAgeMin')?.value;
   const mEnd = control.get('txtAgeMax')?.value;
-  const isValid = parseInt(mStart) < parseInt(mEnd);
+  const isValid = parseFloat(mStart) < parseFloat(mEnd);
 
   // NOTE Invalid
   if (!isValid) return { invalidDateRange: true };

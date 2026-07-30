@@ -90,33 +90,31 @@
 
     <div class="row form-floating mb-3">
       <div class="col-sm form-floating mb-3">
-        <select
+        <input
+          type="text"
+          class="form-control"
           name="txtAgeMin"
           id="txtAgeMin"
-          class="form-select"
           formControlName="txtAgeMin"
           title="{{ tooltips.txtAgeMin }}"
-          [(ngModel)]="addData.age_min"
+          [(ngModel)]="ageMinRaw"
+          (change)="onAgeMinChange($event)"
           #txtAgeMin
-        >
-          <option [ngValue]="null">-- Select --</option>
-          <option *ngFor="let age of ages" [ngValue]="age">{{ age }}</option>
-        </select>
+        />
         <label for="txtAgeMin">Age Min</label>
       </div>
       <div class="col-sm form-floating mb-3">
-        <select
+        <input
+          type="text"
+          class="form-control"
           name="txtAgeMax"
           id="txtAgeMax"
-          class="form-select"
           formControlName="txtAgeMax"
           title="{{ tooltips.txtAgeMax }}"
-          [(ngModel)]="addData.age_max"
+          [(ngModel)]="ageMaxRaw"
+          (change)="onAgeMaxChange($event)"
           #txtAgeMax
-        >
-          <option [ngValue]="null">-- Select --</option>
-          <option *ngFor="let age of ages" [ngValue]="age">{{ age }}</option>
-        </select>
+        />
         <label for="txtAgeMax">Age Max</label>
         <p class="text-danger" *ngIf="myForm.hasError('invalidDateRange')">
           Max age must be greater than Min age
@@ -307,6 +305,22 @@
         <label for="txtLanguage">Language to be shown in history note</label>
       </div>
     </div>
+    <div class="row form-floating mb-3">
+      <div class="col-6 form-floating mb-3">
+        <input
+          type="number"
+          class="form-control"
+          id="txtIndex"
+          placeholder=""
+          name="txtIndex"
+          formControlName="txtIndex"
+          title="{{ tooltips.txtIndex }}"
+          [(ngModel)]="addData.index"
+          min="0"
+        />
+        <label for="txtIndex">Index</label>
+      </div>
+    </div>
     <h6>Triggers</h6>
     <hr />
     <div class="row form-floating mb-3">
@@ -384,7 +398,7 @@
       </div>
     </div>
     <div class="row form-floating mb-3">
-      <div class="col-6 form-floating mb-3">
+      <div class="col-sm form-floating mb-3">
         <textarea
           class="form-control"
           id="txtpopuphi"
@@ -396,6 +410,19 @@
           [(ngModel)]="addData.pop_up_hi"
         ></textarea>
         <label for="txtpopuphi">Pop Up (Hindi)</label>
+      </div>
+      <div class="col-sm form-floating mb-3">
+        <textarea
+          class="form-control"
+          id="txtpopupmr"
+          placeholder=""
+          name="txtpopupmr"
+          formControlName="txtpopupmr"
+          title="{{ tooltips.txtpopupmr }}"
+          rows="3"
+          [(ngModel)]="addData.pop_up_mr"
+        ></textarea>
+        <label for="txtpopupmr">Pop Up (Marathi)</label>
       </div>
     </div>
     <h6>Translations</h6>
@@ -426,6 +453,21 @@
           [(ngModel)]="addData.display_or"
         />
         <label for="txtDisplayOR">Display (Odiya)</label>
+      </div>
+    </div>
+    <div class="row form-floating mb-3">
+      <div class="col-6 form-floating mb-3">
+        <input
+          type="text"
+          class="form-control"
+          id="txtDisplayMR"
+          placeholder=""
+          name="txtDisplayMR"
+          formControlName="txtDisplayMR"
+          title="{{ tooltips.txtDisplayMR }}"
+          [(ngModel)]="addData.display_mr"
+        />
+        <label for="txtDisplayMR">Display (Marathi)</label>
       </div>
     </div>
     <h6>Citation</h6>
@@ -470,9 +512,9 @@
           name="txticd"
           formControlName="txticd"
           title="{{ tooltips.txticd }}"
-          [(ngModel)]="addData.icd_10"
+          [(ngModel)]="addData.icd_11"
         />
-        <label for="txticd">ICD-10</label>
+        <label for="txticd">ICD-11</label>
       </div>
       <div class="col-sm form-floating mb-3">
         <input
