@@ -13,7 +13,8 @@ export class MindmapService {
     perform_physical_exam:
       'Abdomen:Scars;Abdomen:Distension;Abdomen:Tenderness;Abdomen:Lumps;Abdomen:Rebound tenderness;Abdomen:Peristaltic sound;Physical Growth:Sexual Maturation;',
     display_or: 'ପେଟଯନ୍ତ୍ରଣା',
-    display_hi: 'पेट दर्द '
+    display_hi: 'पेट दर्द ',
+    display_mr: 'पोट दुखणे'
   };
   private dataSubject = new BehaviorSubject<IMindMapData>(
     this.getMindMapData(this.mockData)
