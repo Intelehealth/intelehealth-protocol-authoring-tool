@@ -325,16 +325,16 @@
     <hr />
     <div class="row form-floating mb-3">
       <div class="col-sm form-floating mb-3">
-        <input
-          type="text"
+        <textarea
           class="form-control"
           id="txtPPE"
           placeholder=""
           name="txtPPE"
           formControlName="txtPPE"
           title="{{ tooltips.txtPPE }}"
+          rows="3"
           [(ngModel)]="addData.perform_physical_exam"
-        />
+        ></textarea>
         <label for="txtPPE">Perform Physical Exam</label>
       </div>
       <div class="col-sm form-floating mb-3">

@@ -89,14 +89,19 @@ export class FileService {
     return item as IHealthData;
   }
   private getDataForFile(data: any): any {
-    let item: any = {
-      text: '',
-    };
+    let item: any = {};
     if (data) {
       let datakey = Object.keys(this.dataDictionary);
       datakey.forEach((key) => {
         let val: string = this.dataDictionary[key].toString();
-        item[key] = data[val];
+        let value = data[val];
+        if (value !== null && value !== undefined && value !== '') {
+          if (key === 'gender') {
+            item[key] = parseInt(value, 10);
+          } else {
+            item[key] = value;
+          }
+        }
       });
       item.options = [];
       if (data.options && data.options.length > 0) {

@@ -71,17 +71,18 @@ export class MindmapService {
     data.gender = '';
     data.age_min = undefined;
     data.age_max = undefined;
-    data.isRequired = undefined;
-    data.multi_choice = undefined;
-    data.exclude_from_multi_choice = undefined;
+    data.isRequired = null as any;
+    data.multi_choice = null as any;
+    data.exclude_from_multi_choice = null as any;
     data.display = '';
-    data.having_nested_question = undefined;
+    data.having_nested_question = null as any;
     data.compare_duplicate_node = '';
-    data.enable_exclusive_option = undefined;
-    data.is_exclusive_option = undefined;
+    data.enable_exclusive_option = null as any;
+    data.is_exclusive_option = null as any;
     data.language = '';
     data.range_min = undefined;
     data.range_max = undefined;
+    data.index = undefined;
   }
 
   getHealthData(mmdata?: IMindMapData): IHealthData {
