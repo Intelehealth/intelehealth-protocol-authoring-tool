@@ -111,12 +111,12 @@ export class EdithealthdataComponent implements OnInit {
 
   onAgeMinChange(event: any) {
     const val = parseFloat(event.target.value);
-    this.healthdata.age_min = !isNaN(val) ? { ...this.decimalToAgeRange(val), value: val } : undefined;
+    this.healthdata.age_min = (!isNaN(val) && val >= 0) ? { ...this.decimalToAgeRange(val), value: val } : undefined;
   }
 
   onAgeMaxChange(event: any) {
     const val = parseFloat(event.target.value);
-    this.healthdata.age_max = !isNaN(val) ? { ...this.decimalToAgeRange(val), value: val } : undefined;
+    this.healthdata.age_max = (!isNaN(val) && val >= 0) ? { ...this.decimalToAgeRange(val), value: val } : undefined;
   }
 
   constructor(public modal: NgbActiveModal, private mindmapService: MindmapService) {}

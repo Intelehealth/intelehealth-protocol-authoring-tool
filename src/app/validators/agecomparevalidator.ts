@@ -5,21 +5,27 @@ import { ValidationErrors } from '@angular/forms';
 export const AgeCompareValidator: ValidatorFn = (
   control: AbstractControl
 ): ValidationErrors | null => {
-  // NOTE Safety check
-  if (!control.get('txtAgeMin')?.value || !control.get('txtAgeMax')?.value) {
-    return null;
-  }
-
-  // NOTE Compare fields
   const mStart = control.get('txtAgeMin')?.value;
   const mEnd = control.get('txtAgeMax')?.value;
-  const isValid = parseFloat(mStart) < parseFloat(mEnd);
 
-  // NOTE Invalid
-  if (!isValid) return { invalidDateRange: true };
+  const errors: ValidationErrors = {};
 
-  // NOTE Valid
-  return null;
+  // Check for negative values
+  if (mStart && parseFloat(mStart) < 0) {
+    errors['negativeAgeMin'] = true;
+  }
+  if (mEnd && parseFloat(mEnd) < 0) {
+    errors['negativeAgeMax'] = true;
+  }
+
+  // Compare fields only when both are valid positive numbers
+  if (mStart && mEnd && parseFloat(mStart) >= 0 && parseFloat(mEnd) >= 0) {
+    if (parseFloat(mStart) >= parseFloat(mEnd)) {
+      errors['invalidDateRange'] = true;
+    }
+  }
+
+  return Object.keys(errors).length ? errors : null;
 };
 
 export const RangeCompareValidator: ValidatorFn = (
