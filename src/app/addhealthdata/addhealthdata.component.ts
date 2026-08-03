@@ -97,6 +97,7 @@ export class AddhealthdataComponent implements OnInit {
   negativeCondition: boolean = false;
   ageMinRaw: string = '';
   ageMaxRaw: string = '';
+  indexError: boolean = false;
 
   decimalToAgeRange(decimalYears: number): IAgeRange {
     const year = Math.floor(decimalYears);
@@ -109,12 +110,12 @@ export class AddhealthdataComponent implements OnInit {
 
   onAgeMinChange(event: any) {
     const val = parseFloat(event.target.value);
-    this.addData.age_min = !isNaN(val) ? { ...this.decimalToAgeRange(val), value: val } : undefined;
+    this.addData.age_min = (!isNaN(val) && val >= 0) ? { ...this.decimalToAgeRange(val), value: val } : undefined;
   }
 
   onAgeMaxChange(event: any) {
     const val = parseFloat(event.target.value);
-    this.addData.age_max = !isNaN(val) ? { ...this.decimalToAgeRange(val), value: val } : undefined;
+    this.addData.age_max = (!isNaN(val) && val >= 0) ? { ...this.decimalToAgeRange(val), value: val } : undefined;
   }
 
   constructor(public modal: NgbActiveModal, private mindmapService: MindmapService) {}
@@ -131,10 +132,19 @@ export class AddhealthdataComponent implements OnInit {
     }
   }
 
+  onIndexChange(event: any) {
+    const val = parseFloat(event.target.value);
+    this.indexError = !isNaN(val) && val < 0;
+    if (this.indexError) {
+      this.addData.index = undefined;
+    }
+  }
+
   resetNodeRules() {
     this.mindmapService.resetNodeRules(this.addData);
     this.ageMinRaw = '';
     this.ageMaxRaw = '';
+    this.indexError = false;
   }
 
   onSubmit() {

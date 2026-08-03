@@ -99,6 +99,7 @@ export class EdithealthdataComponent implements OnInit {
   negativeCondition: boolean = false;
   ageMinRaw: string = '';
   ageMaxRaw: string = '';
+  indexError: boolean = false;
 
   decimalToAgeRange(decimalYears: number): IAgeRange {
     const year = Math.floor(decimalYears);
@@ -111,12 +112,12 @@ export class EdithealthdataComponent implements OnInit {
 
   onAgeMinChange(event: any) {
     const val = parseFloat(event.target.value);
-    this.healthdata.age_min = !isNaN(val) ? { ...this.decimalToAgeRange(val), value: val } : undefined;
+    this.healthdata.age_min = (!isNaN(val) && val >= 0) ? { ...this.decimalToAgeRange(val), value: val } : undefined;
   }
 
   onAgeMaxChange(event: any) {
     const val = parseFloat(event.target.value);
-    this.healthdata.age_max = !isNaN(val) ? { ...this.decimalToAgeRange(val), value: val } : undefined;
+    this.healthdata.age_max = (!isNaN(val) && val >= 0) ? { ...this.decimalToAgeRange(val), value: val } : undefined;
   }
 
   constructor(public modal: NgbActiveModal, private mindmapService: MindmapService) {}
@@ -153,10 +154,19 @@ export class EdithealthdataComponent implements OnInit {
     }
   }
 
+  onIndexChange(event: any) {
+    const val = parseFloat(event.target.value);
+    this.indexError = !isNaN(val) && val < 0;
+    if (this.indexError) {
+      this.healthdata.index = undefined;
+    }
+  }
+
   resetNodeRules() {
     this.mindmapService.resetNodeRules(this.healthdata);
     this.ageMinRaw = '';
     this.ageMaxRaw = '';
+    this.indexError = false;
   }
 
   onSubmit() {
