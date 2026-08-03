@@ -7,26 +7,36 @@ import { IHealthData } from '../Interfaces/ihealth-data';
 export class FileService {
   private dataDictionary: any = {
     id: 'id',
+    index: 'index',
     text: 'text',
     'perform-physical-exam': 'perform_physical_exam',
     display: 'display',
     isRequired: 'isRequired',
     'multi-choice': 'multi_choice',
     'exclude-from-multi-choice': 'exclude_from_multi_choice',
+    'havingNestedQuestion':'having_nested_question',
+    'compare-duplicate-node':'compare_duplicate_node',
+    'enable-exclusive-option':'enable_exclusive_option',
+    'is-exclusive-option':'is_exclusive_option',
     'display-or': 'display_or',
     'display-hi': 'display_hi',
+    'display-mr': 'display_mr',
     'pop-up': 'pop_up',
     'pop-up-hi': 'pop_up_hi',
+    'pop-up-or': 'pop_up_or',
+    'pop-up-mr': 'pop_up_mr',
     language: 'language',
     'input-type': 'input_type',
     gender: 'gender',
     'age-min': 'age_min',
     'age-max': 'age_max',
+    'range-min': 'range_min',
+    'range-max': 'range_max',
     'pos-condition': 'pos_condition',
     'neg-condition': 'neg_condition',
     citation: 'citation',
     snomed: 'snomed',
-    'icd-10': 'icd_10',
+    'icd-11': 'icd_11',
     loinc: 'loinc',
     'job-aid-type': 'job_aid_type',
     'job-aid-file': 'job_aid_file',
@@ -79,14 +89,19 @@ export class FileService {
     return item as IHealthData;
   }
   private getDataForFile(data: any): any {
-    let item: any = {
-      text: '',
-    };
+    let item: any = {};
     if (data) {
       let datakey = Object.keys(this.dataDictionary);
       datakey.forEach((key) => {
         let val: string = this.dataDictionary[key].toString();
-        item[key] = data[val];
+        let value = data[val];
+        if (value !== null && value !== undefined && value !== '') {
+          if (key === 'gender') {
+            item[key] = parseInt(value, 10);
+          } else {
+            item[key] = value;
+          }
+        }
       });
       item.options = [];
       if (data.options && data.options.length > 0) {

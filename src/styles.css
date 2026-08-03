@@ -27,6 +27,14 @@
   stroke: #ccc;
   stroke-width: 2px;
 }
+
+body,html {
+  height: 100%;
+}
+
+.form-floating>label{
+  left: 5px !important;
+}
 * You can add global styles to this file, and also import other style files */
 
 /* stylelint-disable */
@@ -59,141 +67,287 @@ jmnode{position:absolute;cursor:default;max-width:400px;white-space:nowrap;overf
 jmexpander{position:absolute;width:11px;height:11px;display:block;overflow:hidden;line-height:7px;font-size:12px;text-align:center;border-radius:6px;border-width:1px;border-style:solid;cursor:pointer;}
 
 /* default theme */
-jmnode{padding:10px;background-color:#fff;color:#333;border-radius:5px;box-shadow:1px 1px 1px #666;}
-jmnode:hover{box-shadow:2px 2px 8px #000;background-color:#ebebeb;color:#333;}
-jmnode.selected{background-color:#11f;color:#fff;box-shadow:2px 2px 8px #000;}
-jmnode.root{font-size:14px;}
-jmexpander{border-color:gray;}
-jmexpander:hover{border-color:#000;}
+jmnode{
+  padding:1rem;
+  background: #0FD197;
+  box-shadow: 0 4px 16px #0fd19752;
+  border-radius: 80px;
+  border: none;
+  outline: none;
+  color: #fff;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 150%;
+  cursor: pointer;
+}
+jmnode.root{
+  background-color: #FFA500 !important;
+}
+jmnode:hover{
+  background:#4B39B7;
+}
+jmnode.root:hover{
+  background:#4B39B7 !important;
+}
+jmnode.selected{
+  background-color:#2E1E91 !important;
+  color:#fff;
+  box-shadow:2px 2px 8px #000;
+}
+
+jmexpander{
+  border-color:gray;
+}
+jmexpander:hover{
+  background:#4B39B7;
+  color: white;
+}
 
 @media screen and (max-device-width: 1024px) {
   jmnode{padding:5px;border-radius:3px;font-size:14px;}
   jmnode.root{font-size:21px;}
 }
-/* primary theme */
-jmnodes.theme-primary jmnode{background-color:#428bca;color:#fff;border-color:#357ebd;}
-jmnodes.theme-primary jmnode:hover{background-color:#3276b1;border-color:#285e8e;}
-jmnodes.theme-primary jmnode.selected{background-color:#f1c40f;color:#fff;}
-jmnodes.theme-primary jmnode.root{}
-jmnodes.theme-primary jmexpander{}
-jmnodes.theme-primary jmexpander:hover{}
 
-/* warning theme */
-jmnodes.theme-warning jmnode{background-color:#f0ad4e;border-color:#eea236;color:#fff;}
-jmnodes.theme-warning jmnode:hover{background-color:#ed9c28;border-color:#d58512;}
-jmnodes.theme-warning jmnode.selected{background-color:#11f;color:#fff;}
-jmnodes.theme-warning jmnode.root{}
-jmnodes.theme-warning jmexpander{}
-jmnodes.theme-warning jmexpander:hover{}
 
-/* danger theme */
-jmnodes.theme-danger jmnode{background-color:#d9534f;border-color:#d43f3a;color:#fff;}
-jmnodes.theme-danger jmnode:hover{background-color:#d2322d;border-color:#ac2925;}
-jmnodes.theme-danger jmnode.selected{background-color:#11f;color:#fff;}
-jmnodes.theme-danger jmnode.root{}
-jmnodes.theme-danger jmexpander{}
-jmnodes.theme-danger jmexpander:hover{}
+@media only screen and (max-width: 700px) {
+  .afi-logo {
+    width: 120px;
+  }
+}
+@media only screen and (min-width: 320px) and (max-width: 767px) and (min-height: 667px) {
+  .afi-logo {
+    width: 120px;
+  }
+} /* Your Styles... */
 
-/* success theme */
-jmnodes.theme-success jmnode{background-color:#5cb85c;border-color:#4cae4c;color:#fff;}
-jmnodes.theme-success jmnode:hover{background-color:#47a447;border-color:#398439;}
-jmnodes.theme-success jmnode.selected{background-color:#11f;color:#fff;}
-jmnodes.theme-success jmnode.root{}
-jmnodes.theme-success jmexpander{}
-jmnodes.theme-success jmexpander:hover{}
+@media only screen and (min-device-width: 320px) and (max-device-width: 480px) {
+  .afi-logo {
+    width: 65px;
+  }
+  .ih-logo {
+    margin-bottom: 0 !important;
+  }
+  .ih-logo img {
+    height: 65px;
+  }
+}
 
-/* info theme */
-jmnodes.theme-info jmnode{background-color:#5dc0de;border-color:#46b8da;;color:#fff;}
-jmnodes.theme-info jmnode:hover{background-color:#39b3d7;border-color:#269abc;}
-jmnodes.theme-info jmnode.selected{background-color:#11f;color:#fff;}
-jmnodes.theme-info jmnode.root{}
-jmnodes.theme-info jmexpander{}
-jmnodes.theme-info jmexpander:hover{}
+/* Smartphones (landscape) ----------- */
+@media only screen and (min-width: 321px) {
+  .afi-logo {
+    width: 120px;
+  }
+}
 
-/* greensea theme */
-jmnodes.theme-greensea jmnode{background-color:#1abc9c;color:#fff;}
-jmnodes.theme-greensea jmnode:hover{background-color:#16a085;}
-jmnodes.theme-greensea jmnode.selected{background-color:#11f;color:#fff;}
-jmnodes.theme-greensea jmnode.root{}
-jmnodes.theme-greensea jmexpander{}
-jmnodes.theme-greensea jmexpander:hover{}
+/* Smartphones (portrait) ----------- */
+@media only screen and (max-width: 320px) {
+  .afi-logo {
+    width: 120px;
+  }
+}
 
-/* normal theme */
-jmnodes.theme-normal jmnode{background-color:#A8C6DC;color:#000;}
-jmnodes.theme-normal jmnode:hover{background-color:#fff !important; color: #000 !important;}
-jmnodes.theme-normal jmnode.selected{background-color:#fff;color:#000;}
-jmnodes.theme-normal jmnode.root{}
-jmnodes.theme-normal jmexpander{}
-jmnodes.theme-normal jmexpander:hover{}
+/* iPads (portrait and landscape) ----------- */
+@media only screen and (min-device-width: 768px) and (max-device-width: 1024px) {
+  .afi-logo {
+    width: 120px;
+  }
+}
 
-/* nephrite theme */
-jmnodes.theme-nephrite jmnode{background-color:#2ecc71;color:#fff;}
-jmnodes.theme-nephrite jmnode:hover{background-color:#27ae60;}
-jmnodes.theme-nephrite jmnode.selected{background-color:#11f;color:#fff;}
-jmnodes.theme-nephrite jmnode.root{}
-jmnodes.theme-nephrite jmexpander{}
-jmnodes.theme-nephrite jmexpander:hover{}
+/* iPads (landscape) ----------- */
+@media only screen and (min-device-width: 768px) and (max-device-width: 1024px) and (orientation: landscape) {
+  .afi-logo {
+    width: 120px;
+  }
+}
 
-/* belizehole theme */
-jmnodes.theme-belizehole jmnode{background-color:#3498db;color:#fff;}
-jmnodes.theme-belizehole jmnode:hover{background-color:#2980b9;}
-jmnodes.theme-belizehole jmnode.selected{background-color:#11f;color:#fff;}
-jmnodes.theme-belizehole jmnode.root{}
-jmnodes.theme-belizehole jmexpander{}
-jmnodes.theme-belizehole jmexpander:hover{}
+/* iPads (portrait) ----------- */
+@media only screen and (min-device-width: 768px) and (max-device-width: 1024px) and (orientation: portrait) {
+  .afi-logo {
+    width: 120px;
+  }
+}
+/**********
+  iPad 3
+  **********/
+@media only screen and (min-device-width: 768px) and (max-device-width: 1024px) and (orientation: landscape) and (-webkit-min-device-pixel-ratio: 2) {
+  .afi-logo {
+    width: 120px;
+  }
+}
 
-/* wisteria theme */
-jmnodes.theme-wisteria jmnode{background-color:#9b59b6;color:#fff;}
-jmnodes.theme-wisteria jmnode:hover{background-color:#8e44ad;}
-jmnodes.theme-wisteria jmnode.selected{background-color:#11f;color:#fff;}
-jmnodes.theme-wisteria jmnode.root{}
-jmnodes.theme-wisteria jmexpander{}
-jmnodes.theme-wisteria jmexpander:hover{}
+@media only screen and (min-device-width: 768px) and (max-device-width: 1024px) and (orientation: portrait) and (-webkit-min-device-pixel-ratio: 2) {
+  .afi-logo {
+    width: 120px;
+  }
+}
+/* Desktops and laptops ----------- */
+@media only screen and (min-width: 1224px) {
+  .afi-logo {
+    width: 120px;
+  }
+}
 
-/* asphalt theme */
-jmnodes.theme-asphalt jmnode{background-color:#34495e;color:#fff;}
-jmnodes.theme-asphalt jmnode:hover{background-color:#2c3e50;}
-jmnodes.theme-asphalt jmnode.selected{background-color:#11f;color:#fff;}
-jmnodes.theme-asphalt jmnode.root{}
-jmnodes.theme-asphalt jmexpander{}
-jmnodes.theme-asphalt jmexpander:hover{}
+/* Large screens ----------- */
+@media only screen and (min-width: 1824px) {
+  .afi-logo {
+    width: 120px;
+  }
+}
 
-/* orange theme */
-jmnodes.theme-orange jmnode{background-color:#f1c40f;color:#fff;}
-jmnodes.theme-orange jmnode:hover{background-color:#f39c12;}
-jmnodes.theme-orange jmnode.selected{background-color:#11f;color:#fff;}
-jmnodes.theme-orange jmnode.root{}
-jmnodes.theme-orange jmexpander{}
-jmnodes.theme-orange jmexpander:hover{}
+/* iPhone 4 ----------- */
+@media only screen and (min-device-width: 320px) and (max-device-width: 480px) and (orientation: landscape) and (-webkit-min-device-pixel-ratio: 2) {
+  .afi-logo {
+    width: 120px;
+  }
+}
 
-/* pumpkin theme */
-jmnodes.theme-pumpkin jmnode{background-color:#e67e22;color:#fff;}
-jmnodes.theme-pumpkin jmnode:hover{background-color:#d35400;}
-jmnodes.theme-pumpkin jmnode.selected{background-color:#11f;color:#fff;}
-jmnodes.theme-pumpkin jmnode.root{}
-jmnodes.theme-pumpkin jmexpander{}
-jmnodes.theme-pumpkin jmexpander:hover{}
+@media only screen and (min-device-width: 320px) and (max-device-width: 480px) and (orientation: portrait) and (-webkit-min-device-pixel-ratio: 2) {
+  .afi-logo {
+    width: 120px;
+  }
+}
 
-/* pomegranate theme */
-jmnodes.theme-pomegranate jmnode{background-color:#e74c3c;color:#fff;}
-jmnodes.theme-pomegranate jmnode:hover{background-color:#c0392b;}
-jmnodes.theme-pomegranate jmnode.selected{background-color:#11f;color:#fff;}
-jmnodes.theme-pomegranate jmnode.root{}
-jmnodes.theme-pomegranate jmexpander{}
-jmnodes.theme-pomegranate jmexpander:hover{}
+/* iPhone 5 ----------- */
+@media only screen and (min-device-width: 320px) and (max-device-height: 568px) and (orientation: landscape) and (-webkit-device-pixel-ratio: 2) {
+  .afi-logo {
+    width: 120px;
+  }
+}
 
-/* clouds theme */
-jmnodes.theme-clouds jmnode{background-color:#ecf0f1;color:#333;}
-jmnodes.theme-clouds jmnode:hover{background-color:#bdc3c7;}
-jmnodes.theme-clouds jmnode.selected{background-color:#11f;color:#fff;}
-jmnodes.theme-clouds jmnode.root{}
-jmnodes.theme-clouds jmexpander{}
-jmnodes.theme-clouds jmexpander:hover{}
+@media only screen and (min-device-width: 320px) and (max-device-height: 568px) and (orientation: portrait) and (-webkit-device-pixel-ratio: 2) {
+  .afi-logo {
+    width: 120px;
+  }
+}
 
-/* asbestos theme */
-jmnodes.theme-asbestos jmnode{background-color:#95a5a6;color:#fff;}
-jmnodes.theme-asbestos jmnode:hover{background-color:#7f8c8d;}
-jmnodes.theme-asbestos jmnode.selected{background-color:#11f;color:#fff;}
-jmnodes.theme-asbestos jmnode.root{}
-jmnodes.theme-asbestos jmexpander{}
-jmnodes.theme-asbestos jmexpander:hover{}
+/* iPhone 6, 7, 8 ----------- */
+@media only screen and (min-device-width: 375px) and (max-device-height: 667px) and (orientation: landscape) and (-webkit-device-pixel-ratio: 2) {
+  .afi-logo {
+    width: 120px;
+  }
+}
+
+@media only screen and (min-device-width: 375px) and (max-device-height: 667px) and (orientation: portrait) and (-webkit-device-pixel-ratio: 2) {
+  .afi-logo {
+    width: 120px;
+  }
+}
+
+/* iPhone 6+, 7+, 8+ ----------- */
+@media only screen and (min-device-width: 414px) and (max-device-height: 736px) and (orientation: landscape) and (-webkit-device-pixel-ratio: 2) {
+  .afi-logo {
+    width: 120px;
+  }
+}
+
+@media only screen and (min-device-width: 414px) and (max-device-height: 736px) and (orientation: portrait) and (-webkit-device-pixel-ratio: 2) {
+  .afi-logo {
+    width: 120px;
+  }
+}
+
+/* iPhone X ----------- */
+@media only screen and (min-device-width: 375px) and (max-device-height: 812px) and (orientation: landscape) and (-webkit-device-pixel-ratio: 3) {
+  .afi-logo {
+    width: 120px;
+  }
+}
+
+@media only screen and (min-device-width: 375px) and (max-device-height: 812px) and (orientation: portrait) and (-webkit-device-pixel-ratio: 3) {
+  .afi-logo {
+    width: 120px;
+  }
+}
+
+/* iPhone XS Max, XR ----------- */
+@media only screen and (min-device-width: 414px) and (max-device-height: 896px) and (orientation: landscape) and (-webkit-device-pixel-ratio: 3) {
+  .afi-logo {
+    width: 120px;
+  }
+}
+
+@media only screen and (min-device-width: 414px) and (max-device-height: 896px) and (orientation: portrait) and (-webkit-device-pixel-ratio: 3) {
+  .afi-logo {
+    width: 120px;
+  }
+}
+
+/* Samsung Galaxy S3 ----------- */
+@media only screen and (min-device-width: 320px) and (max-device-height: 640px) and (orientation: landscape) and (-webkit-device-pixel-ratio: 2) {
+  .afi-logo {
+    width: 120px;
+  }
+}
+
+@media only screen and (min-device-width: 320px) and (max-device-height: 640px) and (orientation: portrait) and (-webkit-device-pixel-ratio: 2) {
+  .afi-logo {
+    width: 68px;
+  }
+}
+
+/* Samsung Galaxy S4 ----------- */
+@media only screen and (min-device-width: 320px) and (max-device-height: 640px) and (orientation: landscape) and (-webkit-device-pixel-ratio: 3) {
+  .afi-logo {
+    width: 120px;
+  }
+}
+
+@media only screen and (min-device-width: 320px) and (max-device-height: 640px) and (orientation: portrait) and (-webkit-device-pixel-ratio: 3) {
+  .afi-logo {
+    width: 120px;
+  }
+}
+
+/* Samsung Galaxy S5 ----------- */
+@media only screen and (min-device-width: 360px) and (max-device-height: 640px) and (orientation: landscape) and (-webkit-device-pixel-ratio: 3) {
+  .afi-logo {
+    width: 120px;
+  }
+}
+
+@media only screen and (min-device-width: 360px) and (max-device-height: 640px) and (orientation: portrait) and (-webkit-device-pixel-ratio: 3) {
+  .afi-logo {
+    width: 120px;
+  }
+
+  @media only screen and (min-width: 320px) {
+    .afi-logo {
+      width: 120px;
+    }
+  }
+
+  @media only screen and (min-width: 1200px) {
+    .afi-logo {
+      width: 120px;
+    }
+  }
+
+  @media only screen and (min-width: 1600px) {
+    .afi-logo {
+      width: 120px;
+    }
+  }
+
+  @media only screen and (min-width: 200px) {
+    .afi-logo {
+      width: 120px;
+    }
+  }
+
+  @media only screen and (max-width: 720px) and (max-height: 1280px) {
+    .afi-logo {
+      width: 120px;
+    }
+  }
+
+  @media only screen and (max-width: 1080px) and (max-height: 1920px) {
+    .afi-logo {
+      width: 120px;
+    }
+  }
+  @media screen and (device-aspect-ratio: 40/71) {
+    .afi-logo {
+      width: 120px;
+    }
+  }
+}

@@ -12,7 +12,6 @@ import { Router } from '@angular/router';
 declare var jsMind: any;
 const options = {
   container: 'jsmind_container',
-  theme: 'greensea',
   editable: true,
   mode: 'full',
   format: 'node_tree',
@@ -61,10 +60,7 @@ export class JsmindComponent implements OnInit {
   isNew: boolean = true;
   file?: any;
   mindMap: any;
-  title = 'example-angular10';
-  addData: IHealthData = {
-    text: '',
-  };
+  title = 'Mindmap-SPA';
   isShown: boolean = false;
   @HostListener('window:beforeunload', ['$event']) unloadHandler(event: Event) {
     let result = confirm('Changes you made may not be saved.');
@@ -98,11 +94,9 @@ export class JsmindComponent implements OnInit {
             // version: '0.2',EB9357
           },
           format: 'node_tree',
-          data: data,
+          data: data
         };
         this.mindMap.show(mind);
-        var root = this.mindMap.get_root();
-        this.mindMap.set_node_color(root.id, '#FFA500', null);
       });
     } else {
       let data = this._fileService.getdata();
@@ -117,8 +111,6 @@ export class JsmindComponent implements OnInit {
         data: mmData,
       };
       this.mindMap.show(mind);
-      var root = this.mindMap.get_root();
-      this.mindMap.set_node_color(root.id, '#FFA500', null);
     }
   }
   saveData(hdata: IHealthData) {
@@ -143,10 +135,9 @@ export class JsmindComponent implements OnInit {
       backdrop: true,
       size: 'xl',
     });
-    modal.result.then((res: IHealthData) => {
+    modal.result.then((res: IMindMapData) => {
       if (res) {
-        let mindmapData = this.dataService.getMindMapData(res);
-        let isAdd = this.addNode(mindmapData);
+        let isAdd = this.addNode(res);
         if (isAdd.isErr()) {
           alert(isAdd.unwrapErr());
         }
@@ -155,19 +146,18 @@ export class JsmindComponent implements OnInit {
   }
   editNodeData() {
     let selectedNode = this.mindMap.get_selected_node();
+    console.log(selectedNode);
     if (!selectedNode) {
       alert('Please Select Node');
       return;
     }
-
-    let data = selectedNode.data;
     let modal = this._modalService.open(ModaledithealthdataComponent, {
       backdrop: true,
       size: 'xl',
-    });
+    }); 
 
-    modal.componentInstance.healthdata = data;
-    modal.result.then((res: IHealthData) => {
+    modal.componentInstance.healthdata = {...selectedNode.data,topic:selectedNode.topic};
+    modal.result.then((res: IMindMapData) => {
       if (res) {
         let isEdit = this.editNode(res);
         if (isEdit.isErr()) {
@@ -179,15 +169,14 @@ export class JsmindComponent implements OnInit {
   addNode(mmData: IMindMapData): Result<string, string> {
     let selectedNode = this.mindMap.get_selected_node();
     if (!selectedNode) return Err('Please Select Node');
-
-    this.mindMap.add_node(selectedNode, mmData.id, mmData.topic, mmData);
+    this.mindMap.add_node(selectedNode, mmData.id, mmData.topic, this.getMindmapAdditionalData(mmData));
     return Ok('Node Added');
   }
-  editNode(mmData: IHealthData): Result<string, string> {
+  editNode(mmData: IMindMapData): Result<string, string> {
     let selectedNode = this.mindMap.get_selected_node();
     if (!selectedNode) return Err('Please Select Node');
-    selectedNode.data = mmData;
-    this.mindMap.update_node(selectedNode.id, mmData.text);
+    this.mindMap.update_node(selectedNode.id, mmData.topic);
+    selectedNode.data = this.getMindmapAdditionalData(mmData);
     return Ok('Node Edited');
   }
 
@@ -196,10 +185,14 @@ export class JsmindComponent implements OnInit {
     if (!selectedNode) {
       alert('Please Select Node to delete');
     } else {
-      let answer = window.confirm('Are you sure you want to delete node?');
-      if (answer) {
-        this.mindMap.remove_node(selectedNode);
-        // alert('Node deleted');
+      if(selectedNode.isroot){
+        alert("Parent Node cannot be deleted");
+      } else {
+        let answer = window.confirm('Are you sure you want to delete node?');
+        if (answer) {
+          this.mindMap.remove_node(selectedNode);
+          // alert('Node deleted');
+        }
       }
     }
   }
@@ -208,7 +201,6 @@ export class JsmindComponent implements OnInit {
     var mind_name = mind_data.meta.name;
     var helth_data = this.dataService.getHealthData(mind_data.data);
     this._fileService.writeToFile(helth_data, jsMind.util.file, mind_name);
-    //jsMind.util.file.save(mind_str, 'text/json', mind_name + '.json');
   }
   handleFileInput(event: Event) {
     this.file = (event.target as HTMLInputElement).files?.item(0);
@@ -241,5 +233,12 @@ export class JsmindComponent implements OnInit {
   }
   collapseNode() {
     this.mindMap.collapse_all();
+  }
+
+  getMindmapAdditionalData(mmData:IMindMapData){
+    let node_data: any = {...mmData};
+    delete node_data.id;
+    delete node_data.topic;
+    return node_data;
   }
 }

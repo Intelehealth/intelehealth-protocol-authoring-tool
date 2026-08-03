@@ -1,6 +1,6 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
-import { IHealthData } from '../Interfaces/ihealth-data';
+import { IMindMapData } from '../Interfaces/mindmap-interface';
 
 @Component({
   selector: 'app-modaledithealthdata',
@@ -8,14 +8,13 @@ import { IHealthData } from '../Interfaces/ihealth-data';
   styleUrls: ['./modaledithealthdata.component.css'],
 })
 export class ModaledithealthdataComponent implements OnInit {
-  @Input() public healthdata: IHealthData = {
-    text: '',
+  @Input() public healthdata: IMindMapData = {
+    topic: ''
   };
   constructor(public modal: NgbActiveModal) {}
 
   ngOnInit(): void {}
-  editData(hdata: IHealthData) {
-    console.log('health data', hdata);
+  editData(hdata: IMindMapData) {
     this.modal.close(hdata);
   }
 }

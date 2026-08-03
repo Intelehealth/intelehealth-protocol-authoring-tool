@@ -9,17 +9,44 @@
           placeholder=""
           name="txtText"
           formControlName="txtText"
-          [(ngModel)]="addData.text"
+          title="{{ tooltips.txtText }}"
+          [(ngModel)]="addData.topic"
           list="symptomList"
           (change)="onTextSelection($event)"
+          required
         />
         <datalist id="symptomList">
           <option value="Associated symptoms"></option>
         </datalist>
         <label for="txtText">Text</label>
+        <p class="text-danger" *ngIf="!addData.topic">Text cannot be blank</p>
+      </div>
+      <div class="col-sm form-floating mb-3">
+        <input
+          type="text"
+          class="form-control"
+          id="txtassocomplaint"
+          placeholder=""
+          name="txtassocomplaint"
+          formControlName="txtassocomplaint"
+          title="{{ tooltips.txtassocomplaint }}"
+          [(ngModel)]="addData.associated_complaint"
+        />
+        <label for="txtassocomplaint">Associated Complaint</label>
       </div>
     </div>
-
+    <div class="d-flex justify-content-between align-items-center">
+      <h6 class="mb-0">Node Rules</h6>
+      <button
+        type="button"
+        class="btn btn-primary popup-save-btn btn-sm"
+        (click)="resetNodeRules()"
+        title="Reset all Node Rules fields"
+      >
+        Reset
+      </button>
+    </div>
+    <hr />
     <div class="row form-floating mb-3">
       <div class="col-sm form-floating mb-3">
         <select
@@ -27,15 +54,19 @@
           id="txtInputType"
           class="form-select"
           formControlName="txtInputType"
+          title="{{ tooltips.txtInputType }}"
           [(ngModel)]="addData.input_type"
           placeholder="Input Type"
         >
-          <option value="number">number</option>
+          <option value="">-- Select --</option>
           <option value="text">text</option>
+          <option value="number">number</option>
+          <option value="decimal">decimal</option>
           <option value="date">date</option>
           <option value="duration">duration</option>
           <option value="camera">camera</option>
-          <option value="area">area</option>
+          <option value="frequency">frequency</option>
+          <option value="range">range</option>
         </select>
         <label for="txtInputType">Input Type</label>
       </div>
@@ -45,11 +76,13 @@
           id="txtGender"
           class="form-select"
           formControlName="txtGender"
+          title="{{ tooltips.txtGender }}"
           [(ngModel)]="addData.gender"
         >
-          <option value="male" selected="selected">male</option>
-          <option value="female">female</option>
-          <option value="other">other</option>
+          <option value="">-- Select --</option>
+          <option value="0">male</option>
+          <option value="1">female</option>
+          <option value="2">other</option>
         </select>
         <label for="txtgender">Gender</label>
       </div>
@@ -57,32 +90,66 @@
 
     <div class="row form-floating mb-3">
       <div class="col-sm form-floating mb-3">
-        <select
+        <input
+          type="text"
+          class="form-control"
           name="txtAgeMin"
           id="txtAgeMin"
-          class="form-select"
           formControlName="txtAgeMin"
-          [(ngModel)]="addData.age_min"
+          title="{{ tooltips.txtAgeMin }}"
+          [(ngModel)]="ageMinRaw"
+          (change)="onAgeMinChange($event)"
           #txtAgeMin
-        >
-          <option *ngFor="let age of ages" [ngValue]="age">{{ age }}</option>
-        </select>
+        />
         <label for="txtAgeMin">Age Min</label>
       </div>
       <div class="col-sm form-floating mb-3">
-        <select
+        <input
+          type="text"
+          class="form-control"
           name="txtAgeMax"
           id="txtAgeMax"
-          class="form-select"
           formControlName="txtAgeMax"
-          [(ngModel)]="addData.age_max"
+          title="{{ tooltips.txtAgeMax }}"
+          [(ngModel)]="ageMaxRaw"
+          (change)="onAgeMaxChange($event)"
           #txtAgeMax
-        >
-          <option *ngFor="let age of ages" [ngValue]="age">{{ age }}</option>
-        </select>
+        />
         <label for="txtAgeMax">Age Max</label>
         <p class="text-danger" *ngIf="myForm.hasError('invalidDateRange')">
           Max age must be greater than Min age
+        </p>
+      </div>
+    </div>
+
+    <div class="row form-floating mb-3" *ngIf="addData.input_type === 'range'">
+      <div class="col-sm form-floating mb-3">
+        <input
+          type="number"
+          class="form-control"
+          id="txtRangeMin"
+          placeholder=""
+          name="txtRangeMin"
+          formControlName="txtRangeMin"
+          title="{{ tooltips.txtRangeMin }}"
+          [(ngModel)]="addData.range_min"
+        />
+        <label for="txtRangeMin">Range Min</label>
+      </div>
+      <div class="col-sm form-floating mb-3">
+        <input
+          type="number"
+          class="form-control"
+          id="txtRangeMax"
+          placeholder=""
+          name="txtRangeMax"
+          formControlName="txtRangeMax"
+          title="{{ tooltips.txtRangeMax }}"
+          [(ngModel)]="addData.range_max"
+        />
+        <label for="txtRangeMax">Range Max</label>
+        <p class="text-danger" *ngIf="myForm.hasError('invalidRangeOrder')">
+          Max range must be greater than Min range
         </p>
       </div>
     </div>
@@ -94,13 +161,15 @@
           id="ddisRequired"
           class="form-select"
           formControlName="ddisRequired"
+          title="{{ tooltips.ddisRequired }}"
           [(ngModel)]="addData.isRequired"
           placeholder="Is Required"
         >
+          <option [ngValue]="null">-- Select --</option>
           <option [ngValue]="true">true</option>
           <option [ngValue]="false">false</option>
         </select>
-        <label for="ddisRequired">Is Required</label>
+        <label for="ddisRequired">Is this question Required?</label>
       </div>
       <div class="col-sm form-floating mb-3">
         <select
@@ -108,9 +177,11 @@
           id="ddMultiChoice"
           class="form-select"
           formControlName="ddMultiChoice"
+          title="{{ tooltips.ddMultiChoice }}"
           [(ngModel)]="addData.multi_choice"
           placeholder="Multi Choice"
         >
+          <option [ngValue]="null">-- Select --</option>
           <option [ngValue]="true">true</option>
           <option [ngValue]="false">false</option>
         </select>
@@ -124,9 +195,11 @@
           id="ddExcludeMultiChoice"
           class="form-select"
           formControlName="ddExcludeMultiChoice"
+          title="{{ tooltips.ddExcludeMultiChoice }}"
           [(ngModel)]="addData.exclude_from_multi_choice"
           placeholder="Exclude From Multi Choice"
         >
+          <option [ngValue]="null">-- Select --</option>
           <option [ngValue]="true">true</option>
           <option [ngValue]="false">false</option>
         </select>
@@ -141,14 +214,84 @@
           placeholder=""
           name="txtDisplay"
           formControlName="txtDisplay"
+          title="{{ tooltips.txtDisplay }}"
           [(ngModel)]="addData.display"
         />
-        <label for="txtDisplay">Display</label>
+        <label for="txtDisplay">Display (English)</label>
       </div>
     </div>
 
     <div class="row form-floating mb-3">
       <div class="col-sm form-floating mb-3">
+        <select
+          name="havingNestedQuestion"
+          id="havingNestedQuestion"
+          class="form-select"
+          formControlName="ddHavingNestedQuestion"
+          title="{{ tooltips.ddHavingNestedQuestion }}"
+          [(ngModel)]="addData.having_nested_question"
+          placeholder="Having Nested Question"
+        >
+          <option [ngValue]="null">-- Select --</option>
+          <option [ngValue]="true">true</option>
+          <option [ngValue]="false">false</option>
+        </select>
+        <label for="ddHavingNestedQuestion">Having Nested Question</label>
+      </div>
+
+      <div class="col-sm form-floating mb-3">
+        <input
+          type="text"
+          class="form-control"
+          id="txtCompareDuplicateNode"
+          placeholder=""
+          name="txtCompareDuplicateNode"
+          formControlName="txtCompareDuplicateNode"
+          title="{{ tooltips.txtCompareDuplicateNode }}"
+          [(ngModel)]="addData.compare_duplicate_node"
+        />
+        <label for="txtCompareDuplicateNode">Compare Duplicate Node</label>
+      </div>
+    </div>
+
+    <div class="row form-floating mb-3">
+      <div class="col-sm form-floating mb-3">
+        <select
+          name="ddEnableExclusiveOption"
+          id="ddEnableExclusiveOption"
+          class="form-select"
+          formControlName="ddEnableExclusiveOption"
+          title="{{ tooltips.ddEnableExclusiveOption }}"
+          [(ngModel)]="addData.enable_exclusive_option"
+          placeholder="Enable Exclusive Option"
+        >
+          <option [ngValue]="null">-- Select --</option>
+          <option [ngValue]="true">true</option>
+          <option [ngValue]="false">false</option>
+        </select>
+        <label for="ddEnableExclusiveOption">Enable Exclusive Option</label>
+      </div>
+
+      <div class="col-sm form-floating mb-3">
+        <select
+          name="ddIsExclusiveOption"
+          id="ddIsExclusiveOption"
+          class="form-select"
+          formControlName="ddIsExclusiveOption"
+          title="{{ tooltips.ddIsExclusiveOption }}"
+          [(ngModel)]="addData.is_exclusive_option"
+          placeholder="Is Exclusive Option"
+        >
+          <option [ngValue]="null">-- Select --</option>
+          <option [ngValue]="true">true</option>
+          <option [ngValue]="false">false</option>
+        </select>
+        <label for="ddIsExclusiveOption">Is Exclusive Option</label>
+      </div>
+    </div>
+
+    <div class="row form-floating mb-3">
+      <div class="col-6 form-floating mb-3">
         <input
           type="text"
           class="form-control"
@@ -156,25 +299,44 @@
           placeholder=""
           name="txtLanguage"
           formControlName="txtLanguage"
+          title="{{ tooltips.txtLanguage }}"
           [(ngModel)]="addData.language"
         />
-        <label for="txtLanguage">Language</label>
+        <label for="txtLanguage">Language to be shown in history note</label>
       </div>
-      <div class="col-sm form-floating mb-3">
+    </div>
+    <div class="row form-floating mb-3">
+      <div class="col-6 form-floating mb-3">
         <input
-          type="text"
+          type="number"
+          class="form-control"
+          id="txtIndex"
+          placeholder=""
+          name="txtIndex"
+          formControlName="txtIndex"
+          title="{{ tooltips.txtIndex }}"
+          [(ngModel)]="addData.index"
+          min="0"
+        />
+        <label for="txtIndex">Index</label>
+      </div>
+    </div>
+    <h6>Triggers</h6>
+    <hr />
+    <div class="row form-floating mb-3">
+      <div class="col-sm form-floating mb-3">
+        <textarea
           class="form-control"
           id="txtPPE"
           placeholder=""
           name="txtPPE"
           formControlName="txtPPE"
+          title="{{ tooltips.txtPPE }}"
+          rows="3"
           [(ngModel)]="addData.perform_physical_exam"
-        />
+        ></textarea>
         <label for="txtPPE">Perform Physical Exam</label>
       </div>
-    </div>
-
-    <div class="row form-floating mb-3">
       <div class="col-sm form-floating mb-3">
         <input
           type="text"
@@ -183,11 +345,15 @@
           placeholder=""
           name="txtjobaidtype"
           formControlName="txtjobaidtype"
+          title="{{ tooltips.txtjobaidtype }}"
           [(ngModel)]="addData.job_aid_type"
         />
         <label for="txtjobaidtype">Job Aid Type</label>
       </div>
-      <div class="col-sm form-floating mb-3">
+    </div>
+
+    <div class="row form-floating mb-3">
+      <div class="col-6 form-floating mb-3">
         <input
           type="text"
           class="form-control"
@@ -195,12 +361,14 @@
           placeholder=""
           name="txtjobaidfile"
           formControlName="txtjobaidfile"
+          title="{{ tooltips.txtjobaidfile }}"
           [(ngModel)]="addData.job_aid_file"
         />
         <label for="txtjobaidfile">Job Aid File</label>
       </div>
     </div>
-
+    <h6>Alerts</h6>
+    <hr />
     <div class="row form-floating mb-3">
       <div class="col-sm form-floating mb-3">
         <textarea
@@ -209,12 +377,27 @@
           placeholder=""
           name="txtpopup"
           formControlName="txtpopup"
+          title="{{ tooltips.txtpopup }}"
           rows="3"
           [(ngModel)]="addData.pop_up"
-        >
-        </textarea>
+        ></textarea>
         <label for="txtpopup">Pop Up</label>
       </div>
+      <div class="col-sm form-floating mb-3">
+        <textarea
+          class="form-control"
+          id="txtpopupor"
+          placeholder=""
+          name="txtpopupor"
+          formControlName="txtpopupor"
+          title="{{ tooltips.txtpopupor }}"
+          rows="3"
+          [(ngModel)]="addData.pop_up_or"
+        ></textarea>
+        <label for="txtpopupor">Pop Up (Odiya)</label>
+      </div>
+    </div>
+    <div class="row form-floating mb-3">
       <div class="col-sm form-floating mb-3">
         <textarea
           class="form-control"
@@ -222,12 +405,28 @@
           placeholder=""
           name="txtpopuphi"
           formControlName="txtpopuphi"
+          title="{{ tooltips.txtpopuphi }}"
           rows="3"
           [(ngModel)]="addData.pop_up_hi"
         ></textarea>
-        <label for="txtpopuphi">Pop Up HI</label>
+        <label for="txtpopuphi">Pop Up (Hindi)</label>
+      </div>
+      <div class="col-sm form-floating mb-3">
+        <textarea
+          class="form-control"
+          id="txtpopupmr"
+          placeholder=""
+          name="txtpopupmr"
+          formControlName="txtpopupmr"
+          title="{{ tooltips.txtpopupmr }}"
+          rows="3"
+          [(ngModel)]="addData.pop_up_mr"
+        ></textarea>
+        <label for="txtpopupmr">Pop Up (Marathi)</label>
       </div>
     </div>
+    <h6>Translations</h6>
+    <hr />
     <div class="row form-floating mb-3">
       <div class="col-sm form-floating mb-3">
         <input
@@ -237,9 +436,10 @@
           placeholder=""
           name="txtDisplayHI"
           formControlName="txtDisplayHI"
+          title="{{ tooltips.txtDisplayHI }}"
           [(ngModel)]="addData.display_hi"
         />
-        <label for="txtDisplayHI">Display HI</label>
+        <label for="txtDisplayHI">Display (Hindi)</label>
       </div>
       <div class="col-sm form-floating mb-3">
         <input
@@ -249,11 +449,29 @@
           placeholder=""
           name="txtDisplayOR"
           formControlName="txtDisplayOR"
+          title="{{ tooltips.txtDisplayOR }}"
           [(ngModel)]="addData.display_or"
         />
-        <label for="txtDisplayOR">Display OR</label>
+        <label for="txtDisplayOR">Display (Odiya)</label>
       </div>
     </div>
+    <div class="row form-floating mb-3">
+      <div class="col-6 form-floating mb-3">
+        <input
+          type="text"
+          class="form-control"
+          id="txtDisplayMR"
+          placeholder=""
+          name="txtDisplayMR"
+          formControlName="txtDisplayMR"
+          title="{{ tooltips.txtDisplayMR }}"
+          [(ngModel)]="addData.display_mr"
+        />
+        <label for="txtDisplayMR">Display (Marathi)</label>
+      </div>
+    </div>
+    <h6>Citation</h6>
+    <hr />
     <div class="row form-floating mb-3">
       <div class="col-sm form-floating mb-3">
         <textarea
@@ -262,6 +480,7 @@
           placeholder=""
           name="txtcitation"
           formControlName="txtcitation"
+          title="{{ tooltips.txtcitation }}"
           rows="3"
           [(ngModel)]="addData.citation"
         >
@@ -276,6 +495,7 @@
           placeholder=""
           name="txtsnomed"
           formControlName="txtsnomed"
+          title="{{ tooltips.txtsnomed }}"
           [(ngModel)]="addData.snomed"
         />
         <label for="txtsnomed">Snomed</label>
@@ -291,9 +511,10 @@
           placeholder=""
           name="txticd"
           formControlName="txticd"
-          [(ngModel)]="addData.icd_10"
+          title="{{ tooltips.txticd }}"
+          [(ngModel)]="addData.icd_11"
         />
-        <label for="txticd">ICD-10</label>
+        <label for="txticd">ICD-11</label>
       </div>
       <div class="col-sm form-floating mb-3">
         <input
@@ -303,27 +524,12 @@
           placeholder=""
           name="txtloinc"
           formControlName="txtloinc"
+          title="{{ tooltips.txtloinc }}"
           [(ngModel)]="addData.loinc"
         />
         <label for="txtloinc">LOINC</label>
       </div>
     </div>
-
-    <div class="row form-floating mb-3">
-      <div class="col-sm form-floating mb-3">
-        <input
-          type="text"
-          class="form-control"
-          id="txtassocomplaint"
-          placeholder=""
-          name="txtassocomplaint"
-          formControlName="txtassocomplaint"
-          [(ngModel)]="addData.associated_complaint"
-        />
-        <label for="txtassocomplaint">Associated Complaint</label>
-      </div>
-    </div>
-
     <div class="row form-floating mb-3">
       <div class="col-sm form-floating mb-3" *ngIf="positiveCondition">
         <input
@@ -333,6 +539,7 @@
           placeholder=""
           name="txtPosCon"
           formControlName="txtPosCon"
+          title="{{ tooltips.txtPosCon }}"
           [(ngModel)]="addData.pos_condition"
         />
         <label for="txtPosCon">Positive Condition</label>
@@ -346,15 +553,29 @@
           placeholder=""
           name="txtNegCon"
           formControlName="txtNegCon"
+          title="{{ tooltips.txtNegCon }}"
           [(ngModel)]="addData.neg_condition"
         />
         <label for="txtNegCon">Negative Condition</label>
       </div>
     </div>
 
-    <div class="form-floating mb-3">
-      <button type="submit" class="btn btn-primary" [disabled]="!myForm.valid">
+    <div class="form-floating mb-3 text-center">
+      <button
+        type="submit"
+        class="btn btn-primary btn-lg popup-save-btn"
+        [disabled]="!myForm.valid"
+        title="Save New Data"
+      >
         Save
+      </button>
+      <button
+        type="button"
+        class="btn btn-outline-secondary btn-lg popup-cancel-btn ms-3"
+        (click)="modal.close()"
+        title="Cancel"
+      >
+        Cancel
       </button>
     </div>
   </div>

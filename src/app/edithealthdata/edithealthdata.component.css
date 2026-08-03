@@ -2,3 +2,23 @@
     color: red;
     font-weight: bold;
 }
+
+.popup-save-btn{
+    background: #2E1E91;
+    border-radius: 8px;
+    font-size: 18px;
+    color: #fff;
+    position: relative;
+    width: 7rem;
+    font-weight: 500;
+}
+
+.popup-cancel-btn{
+    background: #fff;
+    border-radius: 8px;
+    font-size: 18px;
+    color: #2e1e91;
+    position: relative;
+    width: 7rem;
+    font-weight: 500;
+}

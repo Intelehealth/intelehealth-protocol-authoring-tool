@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
-import { IHealthData } from '../Interfaces/ihealth-data';
+import { IMindMapData } from '../Interfaces/mindmap-interface';
 
 @Component({
   selector: 'app-modaladdhealthdata',
@@ -11,7 +11,7 @@ export class ModaladdhealthdataComponent implements OnInit {
   constructor(public modal: NgbActiveModal) {}
 
   ngOnInit(): void {}
-  saveData(hdata: IHealthData) {
+  saveData(hdata: IMindMapData) {
     this.modal.close(hdata);
   }
 }

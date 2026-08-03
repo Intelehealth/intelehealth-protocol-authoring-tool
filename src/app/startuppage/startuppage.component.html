@@ -1,20 +1,36 @@
-<div
-  class="bg-light d-flex align-items-center justify-content-center"
-  style="width: 100%; height: 800px"
->
-  <div class="card">
-    <div class="card-body">
-      <div class="col">
-        <button class="btn btn-primary" type="button" routerLink="/jsmind">
-          Create New Mindmap
-        </button>
+<div class="h-100 bg-plum-plate bg-animation">
+  <div class="d-flex h-100 justify-content-center align-items-center">
+    <div class="mx-auto app-login-box col-md-8">
+      <div class="ih-logo mx-auto mb-3" style="text-align: center">
+        <img
+          class="in-logo"
+          src="assets/images/Intelehealth-logo-white1.png"
+          alt=""
+        />
       </div>
-      <div class="col mt-4">
-        <div class="upload-btn-wrapper">
-          <button class="btn">Open Existing Mindmap</button>
-          <input type="file" name="myfile" (change)="handleFileInput($event)" />
-        </div>
+      <div class="mx-auto" style="text-align: center">
+        <h1 class="text-white">Mindmap Creator (SPA)</h1>
+      </div>
+      <div class="modal-dialog w-100 mx-auto">
+          <div class="modal-content">
+            <div class="modal-body p-5">
+              <div class="h5 modal-title text-center">
+                <div class="col">
+                  <button class="btn btn-primary" type="button" routerLink="/jsmind">
+                    Create New Mindmap
+                  </button>
+                </div>
+                <div class="col mt-4">
+                  <div class="upload-btn-wrapper">
+                    <button class="btn" (click)="file.click()">Open Existing Mindmap</button>
+                    <input #file type="file" name="myfile" (change)="handleFileInput($event)" />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
       </div>
     </div>
+    <div class="version">Release 3.2</div>
   </div>
 </div>

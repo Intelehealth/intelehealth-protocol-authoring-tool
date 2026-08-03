@@ -13,86 +13,19 @@ export class MindmapService {
     perform_physical_exam:
       'Abdomen:Scars;Abdomen:Distension;Abdomen:Tenderness;Abdomen:Lumps;Abdomen:Rebound tenderness;Abdomen:Peristaltic sound;Physical Growth:Sexual Maturation;',
     display_or: 'ପେଟଯନ୍ତ୍ରଣା',
-    /* options: [
-      {
-        id: 'ID_210551359',
-        text: 'Site',
-        display: 'Which part of the abdomen do you feel pain?',
-        isRequired: true,
-        multi_choice: false,
-        display_or: 'କୋଉଯାଗାରେ',
-        exclude_from_multi_choice: true,
-        age_max: 120,
-        age_min: 50,
-        citation: 'part of body',
-        snomed: '822998006-276140008',
-        icd_10: 'abdomen',
-        loinc: 'pain',
-        job_aid_type: 'image',
-        job_aid_file: 'jaundiceexample',
-        associated_complaint: 'Syncope',
-        options: [
-          {
-            id: 'ID_562710446',
-            text: 'Lower (R) - Left Illiac Fossa',
-            display_or: 'ବାମ ତଳ',
-            display_hi: 'निम्न (R) – बायां इलिएक फोसा',
-            exclude_from_multi_choice: false,
-            pop_up:
-              'Based on the event or timeframe, enter an estimated date for the last menstrual period',
-            pop_up_hi:
-              'घटना या समय सीमा के आधार पर, पिछले मासिक धर्म की अनुमानित तिथि दर्ज करें',
-          },
-          {
-            id: 'ID_917293565',
-            text: 'All over',
-            display_or: 'ଚାରିଅାଡ଼େ',
-            display_hi: 'हर तरफ',
-          },
-        ],
-        display_hi: 'पेट के किस भाग में आप दर्द महसूस कर रहे हैं?',
-      },
-      {
-        id: 'ID_313791833',
-        text: 'Duration',
-        display: 'Since when have you had this symptom?',
-        isRequired: true,
-        multi_choice: false,
-        display_or: 'କେବେଠାରୁ',
-        language: '%',
-        options: [
-          {
-            id: 'ID_826155781',
-            text: '[Enter since when]',
-            input_type: 'duration',
-            language: 'since',
-            display_or: 'କେବେ ଠାରୁ ଲେଖ',
-            display_hi: '( कब से है- दर्ज करें)',
-            exclude_from_multi_choice: true,
-          },
-        ],
-        display_hi: 'आपको यह लक्षण कब से है?',
-      },
-    ],*/
     display_hi: 'पेट दर्द ',
+    display_mr: 'पोट दुखणे'
   };
   private dataSubject = new BehaviorSubject<IMindMapData>(
     this.getMindMapData(this.mockData)
   );
   $data = this.dataSubject.asObservable();
-  addData(parentNode: IMindMapData, childNode: IMindMapData) {
-    if (parentNode) {
-      if (!parentNode.children) {
-        parentNode.children = new Array<IMindMapData>();
-      }
-      parentNode.children.push(childNode);
-    }
-  }
+
   getMindMapData(healthdata?: IHealthData): IMindMapData {
-    let item: IMindMapData = { topic: '' };
+    let item: IMindMapData = { topic: ''};
     if (healthdata) {
       item.id = healthdata.id;
-      item.text = healthdata.text;
+      item.index = healthdata.index;
       item.topic = healthdata.text;
       item.perform_physical_exam = healthdata.perform_physical_exam;
       item.display = healthdata.display;
@@ -101,18 +34,23 @@ export class MindmapService {
       item.exclude_from_multi_choice = healthdata.exclude_from_multi_choice;
       item.display_or = healthdata.display_or;
       item.display_hi = healthdata.display_hi;
+      item.display_mr = healthdata.display_mr;
       item.pop_up = healthdata.pop_up;
       item.pop_up_hi = healthdata.pop_up_hi;
+      item.pop_up_or = healthdata.pop_up_or;
+      item.pop_up_mr = healthdata.pop_up_mr;
       item.language = healthdata.language;
       item.input_type = healthdata.input_type;
       item.gender = healthdata.gender;
       item.age_min = healthdata.age_min;
       item.age_max = healthdata.age_max;
+      item.range_min = healthdata.range_min;
+      item.range_max = healthdata.range_max;
       item.pos_condition = healthdata.pos_condition;
       item.neg_condition = healthdata.neg_condition;
       item.citation = healthdata.citation;
       item.snomed = healthdata.snomed;
-      item.icd_10 = healthdata.icd_10;
+      item.icd_11 = healthdata.icd_11;
       item.loinc = healthdata.loinc;
       item.job_aid_type = healthdata.job_aid_type;
       item.job_aid_file = healthdata.job_aid_file;
@@ -128,30 +66,59 @@ export class MindmapService {
     }
     return item;
   }
+  resetNodeRules(data: IMindMapData): void {
+    data.input_type = '';
+    data.gender = '';
+    data.age_min = undefined;
+    data.age_max = undefined;
+    data.isRequired = null as any;
+    data.multi_choice = null as any;
+    data.exclude_from_multi_choice = null as any;
+    data.display = '';
+    data.having_nested_question = null as any;
+    data.compare_duplicate_node = '';
+    data.enable_exclusive_option = null as any;
+    data.is_exclusive_option = null as any;
+    data.language = '';
+    data.range_min = undefined;
+    data.range_max = undefined;
+    data.index = undefined;
+  }
+
   getHealthData(mmdata?: IMindMapData): IHealthData {
     let item: IHealthData = { text: '' };
     if (mmdata) {
       item.id = mmdata.id;
+      item.index = mmdata.index;
       item.text = mmdata.topic;
       item.perform_physical_exam = mmdata.perform_physical_exam;
       item.display = mmdata.display;
       item.isRequired = mmdata.isRequired;
       item.multi_choice = mmdata.multi_choice;
       item.exclude_from_multi_choice = mmdata.exclude_from_multi_choice;
+      item.having_nested_question = mmdata.having_nested_question;
+      item.compare_duplicate_node = mmdata.compare_duplicate_node;
+      item.enable_exclusive_option = mmdata.enable_exclusive_option;
+      item.is_exclusive_option = mmdata.is_exclusive_option;
       item.display_or = mmdata.display_or;
       item.display_hi = mmdata.display_hi;
+      item.display_mr = mmdata.display_mr;
       item.pop_up = mmdata.pop_up;
       item.pop_up_hi = mmdata.pop_up_hi;
+      item.pop_up_or = mmdata.pop_up_or;
+      item.pop_up_mr = mmdata.pop_up_mr;
       item.language = mmdata.language;
       item.input_type = mmdata.input_type;
       item.gender = mmdata.gender;
       item.age_min = mmdata.age_min;
       item.age_max = mmdata.age_max;
+      item.range_min = mmdata.range_min;
+      item.range_max = mmdata.range_max;
       item.pos_condition = mmdata.pos_condition;
       item.neg_condition = mmdata.neg_condition;
       item.citation = mmdata.citation;
       item.snomed = mmdata.snomed;
-      item.icd_10 = mmdata.icd_10;
+      item.icd_11 = mmdata.icd_11;
       item.loinc = mmdata.loinc;
       item.job_aid_type = mmdata.job_aid_type;
       item.job_aid_file = mmdata.job_aid_file;
