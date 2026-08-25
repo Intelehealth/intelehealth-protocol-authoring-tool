@@ -88,6 +88,10 @@ export class FileService {
     }
     return item as IHealthData;
   }
+
+  public getFileData(healthdata: IHealthData): any {
+    return this.getDataForFile(healthdata);
+  }
   private getDataForFile(data: any): any {
     let item: any = {};
     if (data) {

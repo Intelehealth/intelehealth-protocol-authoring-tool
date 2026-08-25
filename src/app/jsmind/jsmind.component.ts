@@ -8,6 +8,7 @@ import { ModaldialogComponent } from '../modaldialog/modaldialog.component';
 import { ModaladdhealthdataComponent } from '../modaladdhealthdata/modaladdhealthdata.component';
 import { ModaledithealthdataComponent } from '../modaledithealthdata/modaledithealthdata.component';
 import { FileService } from '../services/file.service';
+import { FhirService } from '../services/fhir.service';
 import { Router } from '@angular/router';
 declare var jsMind: any;
 const options = {
@@ -73,6 +74,7 @@ export class JsmindComponent implements OnInit {
     private dataService: MindmapService,
     private _modalService: NgbModal,
     private _fileService: FileService,
+    private _fhirService: FhirService,
     private _router: Router
   ) {
     let show = this._router.getCurrentNavigation()?.extras.state;
@@ -201,6 +203,12 @@ export class JsmindComponent implements OnInit {
     var mind_name = mind_data.meta.name;
     var helth_data = this.dataService.getHealthData(mind_data.data);
     this._fileService.writeToFile(helth_data, jsMind.util.file, mind_name);
+  }
+  getFhirData() {
+    var mind_data = this.mindMap.get_data('node_tree');
+    var helth_data = this.dataService.getHealthData(mind_data.data);
+    var protocol_data = this._fileService.getFileData(helth_data);
+    this._fhirService.writeToFile(protocol_data, jsMind.util.file);
   }
   handleFileInput(event: Event) {
     this.file = (event.target as HTMLInputElement).files?.item(0);
