@@ -1,0 +1,108 @@
+<div class="modal-header fg-modal-header">
+  <h5 class="modal-title">
+    <i class="bi bi-book me-2"></i>Field Reference Guide
+  </h5>
+  <button type="button" class="btn-close btn-close-white" (click)="activeModal.dismiss()"></button>
+</div>
+
+<div class="modal-body">
+  <div class="container">
+
+    <!-- Search bar -->
+    <div class="row form-floating mb-3">
+      <div class="col-sm form-floating mb-3">
+        <div class="input-group">
+          <span class="input-group-text bg-white border-end-0">
+            <i class="bi bi-search text-muted"></i>
+          </span>
+          <input
+            type="text"
+            class="form-control border-start-0 ps-0"
+            placeholder="Search fields by name, key, or description..."
+            [(ngModel)]="searchText"
+          />
+          <button
+            *ngIf="searchText"
+            type="button"
+            class="btn btn-outline-secondary"
+            (click)="clearSearch()"
+          >
+            <i class="bi bi-x-lg"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Empty state -->
+    <div *ngIf="filteredSections.length === 0" class="text-center py-4 text-muted">
+      <i class="bi bi-search d-block mb-2 fg-empty-icon"></i>
+      No fields match <strong>"{{ searchText }}"</strong>.
+      <button class="btn btn-sm btn-outline-secondary ms-2" (click)="clearSearch()">Clear</button>
+    </div>
+
+    <!-- Sections — h6 + hr same as Add Data form -->
+    <ng-container *ngFor="let section of filteredSections">
+      <h6><i class="bi {{ section.icon }} me-1"></i>{{ section.section }}</h6>
+      <hr />
+
+      <div class="row mb-4 align-items-start fg-field-row"
+           *ngFor="let field of section.fields">
+
+        <!-- Left: form label + key + type (matches label column in Add Data) -->
+        <div class="col-sm-4">
+          <div class="fg-form-label">
+            {{ field.label }}
+            <span *ngIf="field.required" class="text-danger">*</span>
+          </div>
+          <div class="mt-1">
+            <code class="fg-key-chip">{{ field.key }}</code>
+            <span class="fg-type-pill ms-2">{{ field.type }}</span>
+          </div>
+        </div>
+
+        <!-- Right: plain label + description + extras -->
+        <div class="col-sm-8">
+          <div class="fg-plain-label">{{ field.plainLabel }}</div>
+          <p class="fg-description mb-1">{{ field.description }}</p>
+
+          <!-- Conditional visibility notice -->
+          <div *ngIf="field.conditional" class="fg-conditional mt-1">
+            <i class="bi bi-eye me-1"></i>{{ field.conditional }}
+          </div>
+
+          <!-- Options list -->
+          <div *ngIf="field.options && field.options.length > 0" class="fg-options mt-2">
+            <div class="fg-options-title">Options:</div>
+            <div *ngFor="let opt of field.options" class="fg-option-row">
+              <code class="fg-opt-val">{{ opt.value }}</code>
+              <span class="fg-opt-sep mx-1">&mdash;</span>
+              <span class="fg-opt-meaning">{{ opt.meaning }}</span>
+            </div>
+          </div>
+
+          <!-- Example -->
+          <div *ngIf="field.example" class="fg-example mt-2">
+            <i class="bi bi-lightbulb me-1"></i><strong>Example:</strong> {{ field.example }}
+          </div>
+        </div>
+
+      </div>
+
+    </ng-container>
+
+    <!-- Footer actions — same pattern as Save/Cancel in Add Data -->
+    <div class="form-floating mb-3 text-center">
+      <small class="text-muted d-block mb-2">
+        {{ allSections.length }} sections &bull; {{ totalFieldCount }} fields total
+      </small>
+      <button
+        type="button"
+        class="btn btn-outline-secondary btn-lg popup-cancel-btn"
+        (click)="activeModal.dismiss()"
+      >
+        Close
+      </button>
+    </div>
+
+  </div>
+</div>

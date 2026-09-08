@@ -17,22 +17,12 @@
         />
         <datalist id="symptomList">
           <option value="Associated symptoms"></option>
+          <option value="Other"></option>
+          <option value="Others"></option>
+          <option value="Other [describe]"></option>
         </datalist>
-        <label for="txtText">Text</label>
+        <label for="txtText">Text <i class="bi bi-info-circle-fill field-info-icon" [ngbTooltip]="tooltips.txtText" placement="top" container="body" tooltipClass="field-tooltip"></i></label>
         <p class="text-danger" *ngIf="!addData.topic">Text cannot be blank</p>
-      </div>
-      <div class="col-sm form-floating mb-3">
-        <input
-          type="text"
-          class="form-control"
-          id="txtassocomplaint"
-          placeholder=""
-          name="txtassocomplaint"
-          formControlName="txtassocomplaint"
-          title="{{ tooltips.txtassocomplaint }}"
-          [(ngModel)]="addData.associated_complaint"
-        />
-        <label for="txtassocomplaint">Associated Complaint</label>
       </div>
     </div>
     <div class="d-flex justify-content-between align-items-center">
@@ -68,7 +58,7 @@
           <option value="frequency">frequency</option>
           <option value="range">range</option>
         </select>
-        <label for="txtInputType">Input Type</label>
+        <label for="txtInputType">Input Type <i class="bi bi-info-circle-fill field-info-icon" [ngbTooltip]="tooltips.txtInputType" placement="top" container="body" tooltipClass="field-tooltip"></i></label>
       </div>
       <div class="col-sm form-floating mb-3">
         <select
@@ -84,46 +74,110 @@
           <option value="0">female</option>
           <option value="2">other</option>
         </select>
-        <label for="txtgender">Gender</label>
+        <label for="txtgender">Gender <i class="bi bi-info-circle-fill field-info-icon" [ngbTooltip]="tooltips.txtGender" placement="top" container="body" tooltipClass="field-tooltip"></i></label>
       </div>
     </div>
 
-    <div class="row form-floating mb-3">
-      <div class="col-sm form-floating mb-3">
-        <input
-          type="number"
-          min="0"
-          class="form-control"
-          name="txtAgeMin"
-          id="txtAgeMin"
-          formControlName="txtAgeMin"
-          title="{{ tooltips.txtAgeMin }}"
-          [(ngModel)]="ageMinRaw"
-          (change)="onAgeMinChange($event)"
-          #txtAgeMin
-        />
-        <label for="txtAgeMin">Age Min</label>
-        <p class="text-danger" *ngIf="myForm.hasError('negativeAgeMin')">
-          Age Min must be a positive number
-        </p>
+    <div class="row mb-3">
+      <div class="col-sm mb-3">
+        <label class="form-label">Age Min <i class="bi bi-info-circle-fill field-info-icon" [ngbTooltip]="tooltips.txtAgeMin" placement="top" container="body" tooltipClass="field-tooltip"></i></label>
+        <div class="row g-2">
+          <div class="col-4 form-floating mb-3">
+            <select
+              class="form-select"
+              id="txtAgeMinYear"
+              name="txtAgeMinYear"
+              formControlName="txtAgeMinYear"
+              placeholder="Years"
+              [(ngModel)]="ageMinYear"
+              (ngModelChange)="onAgeMinYearChange()"
+            >
+              <option [ngValue]="null">-- Select --</option>
+              <option *ngFor="let y of yearOptions" [ngValue]="y">{{ y }}</option>
+            </select>
+            <label for="txtAgeMinYear">Years</label>
+          </div>
+          <div class="col-4 form-floating mb-3">
+            <select
+              class="form-select"
+              id="txtAgeMinMonths"
+              name="txtAgeMinMonths"
+              formControlName="txtAgeMinMonths"
+              placeholder="Months"
+              [(ngModel)]="ageMinMonths"
+              (ngModelChange)="onAgeMinMonthChange()"
+            >
+              <option [ngValue]="null">-- Select --</option>
+              <option *ngFor="let m of monthOptions" [ngValue]="m">{{ m }}</option>
+            </select>
+            <label for="txtAgeMinMonths">Months</label>
+          </div>
+          <div class="col-4 form-floating mb-3">
+            <select
+              class="form-select"
+              id="txtAgeMinDays"
+              name="txtAgeMinDays"
+              formControlName="txtAgeMinDays"
+              placeholder="Days"
+              [(ngModel)]="ageMinDays"
+              (ngModelChange)="onAgeMinDayChange()"
+            >
+              <option [ngValue]="null">-- Select --</option>
+              <option *ngFor="let d of ageMinDayOptions" [ngValue]="d">{{ d }}</option>
+            </select>
+            <label for="txtAgeMinDays">Days</label>
+          </div>
+        </div>
       </div>
-      <div class="col-sm form-floating mb-3">
-        <input
-          type="number"
-          min="0"
-          class="form-control"
-          name="txtAgeMax"
-          id="txtAgeMax"
-          formControlName="txtAgeMax"
-          title="{{ tooltips.txtAgeMax }}"
-          [(ngModel)]="ageMaxRaw"
-          (change)="onAgeMaxChange($event)"
-          #txtAgeMax
-        />
-        <label for="txtAgeMax">Age Max</label>
-        <p class="text-danger" *ngIf="myForm.hasError('negativeAgeMax')">
-          Age Max must be a positive number
-        </p>
+      <div class="col-sm mb-3">
+        <label class="form-label">Age Max <i class="bi bi-info-circle-fill field-info-icon" [ngbTooltip]="tooltips.txtAgeMax" placement="top" container="body" tooltipClass="field-tooltip"></i></label>
+        <div class="row g-2">
+          <div class="col-4 form-floating mb-3">
+            <select
+              class="form-select"
+              id="txtAgeMaxYear"
+              name="txtAgeMaxYear"
+              formControlName="txtAgeMaxYear"
+              placeholder="Years"
+              [(ngModel)]="ageMaxYear"
+              (ngModelChange)="onAgeMaxYearChange()"
+            >
+              <option [ngValue]="null">-- Select --</option>
+              <option *ngFor="let y of yearOptions" [ngValue]="y">{{ y }}</option>
+            </select>
+            <label for="txtAgeMaxYear">Years</label>
+          </div>
+          <div class="col-4 form-floating mb-3">
+            <select
+              class="form-select"
+              id="txtAgeMaxMonths"
+              name="txtAgeMaxMonths"
+              formControlName="txtAgeMaxMonths"
+              placeholder="Months"
+              [(ngModel)]="ageMaxMonths"
+              (ngModelChange)="onAgeMaxMonthChange()"
+            >
+              <option [ngValue]="null">-- Select --</option>
+              <option *ngFor="let m of monthOptions" [ngValue]="m">{{ m }}</option>
+            </select>
+            <label for="txtAgeMaxMonths">Months</label>
+          </div>
+          <div class="col-4 form-floating mb-3">
+            <select
+              class="form-select"
+              id="txtAgeMaxDays"
+              name="txtAgeMaxDays"
+              formControlName="txtAgeMaxDays"
+              placeholder="Days"
+              [(ngModel)]="ageMaxDays"
+              (ngModelChange)="onAgeMaxDayChange()"
+            >
+              <option [ngValue]="null">-- Select --</option>
+              <option *ngFor="let d of ageMaxDayOptions" [ngValue]="d">{{ d }}</option>
+            </select>
+            <label for="txtAgeMaxDays">Days</label>
+          </div>
+        </div>
         <p class="text-danger" *ngIf="myForm.hasError('invalidDateRange')">
           Max age must be greater than Min age
         </p>
@@ -142,7 +196,7 @@
           title="{{ tooltips.txtRangeMin }}"
           [(ngModel)]="addData.range_min"
         />
-        <label for="txtRangeMin">Range Min</label>
+        <label for="txtRangeMin">Range Min <i class="bi bi-info-circle-fill field-info-icon" [ngbTooltip]="tooltips.txtRangeMin" placement="top" container="body" tooltipClass="field-tooltip"></i></label>
       </div>
       <div class="col-sm form-floating mb-3">
         <input
@@ -155,10 +209,29 @@
           title="{{ tooltips.txtRangeMax }}"
           [(ngModel)]="addData.range_max"
         />
-        <label for="txtRangeMax">Range Max</label>
+        <label for="txtRangeMax">Range Max <i class="bi bi-info-circle-fill field-info-icon" [ngbTooltip]="tooltips.txtRangeMax" placement="top" container="body" tooltipClass="field-tooltip"></i></label>
         <p class="text-danger" *ngIf="myForm.hasError('invalidRangeOrder')">
           Max range must be greater than Min range
         </p>
+      </div>
+    </div>
+
+    <div class="row form-floating mb-3" *ngIf="addData.input_type === 'camera'">
+      <div class="col-sm form-floating mb-3">
+        <select
+          name="ddIsExclusive"
+          id="ddIsExclusive"
+          class="form-select"
+          formControlName="ddIsExclusive"
+          title="{{ tooltips.ddIsExclusive }}"
+          [(ngModel)]="addData.is_exclusive"
+          placeholder="Is Exclusive (Camera)"
+        >
+          <option [ngValue]="null">-- Select --</option>
+          <option [ngValue]="true">true</option>
+          <option [ngValue]="false">false</option>
+        </select>
+        <label for="ddIsExclusive">Is Exclusive (Camera) <i class="bi bi-info-circle-fill field-info-icon" [ngbTooltip]="tooltips.ddIsExclusive" placement="top" container="body" tooltipClass="field-tooltip"></i></label>
       </div>
     </div>
 
@@ -177,7 +250,7 @@
           <option [ngValue]="true">true</option>
           <option [ngValue]="false">false</option>
         </select>
-        <label for="ddisRequired">Is this question Required?</label>
+        <label for="ddisRequired">Is this question Required? <i class="bi bi-info-circle-fill field-info-icon" [ngbTooltip]="tooltips.ddisRequired" placement="top" container="body" tooltipClass="field-tooltip"></i></label>
       </div>
       <div class="col-sm form-floating mb-3">
         <select
@@ -193,7 +266,7 @@
           <option [ngValue]="true">true</option>
           <option [ngValue]="false">false</option>
         </select>
-        <label for="ddMultiChoice">Multi Choice</label>
+        <label for="ddMultiChoice">Multi Choice <i class="bi bi-info-circle-fill field-info-icon" [ngbTooltip]="tooltips.ddMultiChoice" placement="top" container="body" tooltipClass="field-tooltip"></i></label>
       </div>
     </div>
     <div class="row form-floating mb-3">
@@ -211,7 +284,7 @@
           <option [ngValue]="true">true</option>
           <option [ngValue]="false">false</option>
         </select>
-        <label for="ddExcludeMultiChoice">Exclude From Multi Choice</label>
+        <label for="ddExcludeMultiChoice">Exclude From Multi Choice <i class="bi bi-info-circle-fill field-info-icon" [ngbTooltip]="tooltips.ddExcludeMultiChoice" placement="top" container="body" tooltipClass="field-tooltip"></i></label>
       </div>
 
       <div class="col-sm form-floating mb-3">
@@ -225,7 +298,7 @@
           title="{{ tooltips.txtDisplay }}"
           [(ngModel)]="addData.display"
         />
-        <label for="txtDisplay">Display (English)</label>
+        <label for="txtDisplay">Display (English) <i class="bi bi-info-circle-fill field-info-icon" [ngbTooltip]="tooltips.txtDisplay" placement="top" container="body" tooltipClass="field-tooltip"></i></label>
       </div>
     </div>
 
@@ -244,7 +317,7 @@
           <option [ngValue]="true">true</option>
           <option [ngValue]="false">false</option>
         </select>
-        <label for="ddHavingNestedQuestion">Having Nested Question</label>
+        <label for="ddHavingNestedQuestion">Having Nested Question <i class="bi bi-info-circle-fill field-info-icon" [ngbTooltip]="tooltips.ddHavingNestedQuestion" placement="top" container="body" tooltipClass="field-tooltip"></i></label>
       </div>
 
       <div class="col-sm form-floating mb-3">
@@ -258,7 +331,7 @@
           title="{{ tooltips.txtCompareDuplicateNode }}"
           [(ngModel)]="addData.compare_duplicate_node"
         />
-        <label for="txtCompareDuplicateNode">Compare Duplicate Node</label>
+        <label for="txtCompareDuplicateNode">Compare Duplicate Node <i class="bi bi-info-circle-fill field-info-icon" [ngbTooltip]="tooltips.txtCompareDuplicateNode" placement="top" container="body" tooltipClass="field-tooltip"></i></label>
       </div>
     </div>
 
@@ -277,7 +350,7 @@
           <option [ngValue]="true">true</option>
           <option [ngValue]="false">false</option>
         </select>
-        <label for="ddEnableExclusiveOption">Enable Exclusive Option</label>
+        <label for="ddEnableExclusiveOption">Enable Exclusive Option <i class="bi bi-info-circle-fill field-info-icon" [ngbTooltip]="tooltips.ddEnableExclusiveOption" placement="top" container="body" tooltipClass="field-tooltip"></i></label>
       </div>
 
       <div class="col-sm form-floating mb-3">
@@ -294,7 +367,7 @@
           <option [ngValue]="true">true</option>
           <option [ngValue]="false">false</option>
         </select>
-        <label for="ddIsExclusiveOption">Is Exclusive Option</label>
+        <label for="ddIsExclusiveOption">Is Exclusive Option <i class="bi bi-info-circle-fill field-info-icon" [ngbTooltip]="tooltips.ddIsExclusiveOption" placement="top" container="body" tooltipClass="field-tooltip"></i></label>
       </div>
     </div>
 
@@ -310,7 +383,7 @@
           title="{{ tooltips.txtLanguage }}"
           [(ngModel)]="addData.language"
         />
-        <label for="txtLanguage">Language to be shown in history note</label>
+        <label for="txtLanguage">Language to be shown in history note <i class="bi bi-info-circle-fill field-info-icon" [ngbTooltip]="tooltips.txtLanguage" placement="top" container="body" tooltipClass="field-tooltip"></i></label>
       </div>
     </div>
     <div class="row form-floating mb-3">
@@ -327,7 +400,7 @@
           min="0"
           (input)="onIndexChange($event)"
         />
-        <label for="txtIndex">Index</label>
+        <label for="txtIndex">Index <i class="bi bi-info-circle-fill field-info-icon" [ngbTooltip]="tooltips.txtIndex" placement="top" container="body" tooltipClass="field-tooltip"></i></label>
         <p class="text-danger" *ngIf="indexError">
           Index must be a positive number
         </p>
@@ -347,7 +420,7 @@
           rows="3"
           [(ngModel)]="addData.perform_physical_exam"
         ></textarea>
-        <label for="txtPPE">Perform Physical Exam</label>
+        <label for="txtPPE">Perform Physical Exam <i class="bi bi-info-circle-fill field-info-icon" [ngbTooltip]="tooltips.txtPPE" placement="top" container="body" tooltipClass="field-tooltip"></i></label>
       </div>
       <div class="col-sm form-floating mb-3">
         <input
@@ -360,7 +433,7 @@
           title="{{ tooltips.txtjobaidtype }}"
           [(ngModel)]="addData.job_aid_type"
         />
-        <label for="txtjobaidtype">Job Aid Type</label>
+        <label for="txtjobaidtype">Job Aid Type <i class="bi bi-info-circle-fill field-info-icon" [ngbTooltip]="tooltips.txtjobaidtype" placement="top" container="body" tooltipClass="field-tooltip"></i></label>
       </div>
     </div>
 
@@ -376,7 +449,7 @@
           title="{{ tooltips.txtjobaidfile }}"
           [(ngModel)]="addData.job_aid_file"
         />
-        <label for="txtjobaidfile">Job Aid File</label>
+        <label for="txtjobaidfile">Job Aid File <i class="bi bi-info-circle-fill field-info-icon" [ngbTooltip]="tooltips.txtjobaidfile" placement="top" container="body" tooltipClass="field-tooltip"></i></label>
       </div>
     </div>
     <h6>Alerts</h6>
@@ -393,7 +466,7 @@
           rows="3"
           [(ngModel)]="addData.pop_up"
         ></textarea>
-        <label for="txtpopup">Pop Up</label>
+        <label for="txtpopup">Pop Up <i class="bi bi-info-circle-fill field-info-icon" [ngbTooltip]="tooltips.txtpopup" placement="top" container="body" tooltipClass="field-tooltip"></i></label>
       </div>
       <div class="col-sm form-floating mb-3">
         <textarea
@@ -406,7 +479,7 @@
           rows="3"
           [(ngModel)]="addData.pop_up_or"
         ></textarea>
-        <label for="txtpopupor">Pop Up (Odiya)</label>
+        <label for="txtpopupor">Pop Up (Odiya) <i class="bi bi-info-circle-fill field-info-icon" [ngbTooltip]="tooltips.txtpopupor" placement="top" container="body" tooltipClass="field-tooltip"></i></label>
       </div>
     </div>
     <div class="row form-floating mb-3">
@@ -421,7 +494,7 @@
           rows="3"
           [(ngModel)]="addData.pop_up_hi"
         ></textarea>
-        <label for="txtpopuphi">Pop Up (Hindi)</label>
+        <label for="txtpopuphi">Pop Up (Hindi) <i class="bi bi-info-circle-fill field-info-icon" [ngbTooltip]="tooltips.txtpopuphi" placement="top" container="body" tooltipClass="field-tooltip"></i></label>
       </div>
       <div class="col-sm form-floating mb-3">
         <textarea
@@ -434,7 +507,7 @@
           rows="3"
           [(ngModel)]="addData.pop_up_mr"
         ></textarea>
-        <label for="txtpopupmr">Pop Up (Marathi)</label>
+        <label for="txtpopupmr">Pop Up (Marathi) <i class="bi bi-info-circle-fill field-info-icon" [ngbTooltip]="tooltips.txtpopupmr" placement="top" container="body" tooltipClass="field-tooltip"></i></label>
       </div>
     </div>
     <h6>Translations</h6>
@@ -451,7 +524,7 @@
           title="{{ tooltips.txtDisplayHI }}"
           [(ngModel)]="addData.display_hi"
         />
-        <label for="txtDisplayHI">Display (Hindi)</label>
+        <label for="txtDisplayHI">Display (Hindi) <i class="bi bi-info-circle-fill field-info-icon" [ngbTooltip]="tooltips.txtDisplayHI" placement="top" container="body" tooltipClass="field-tooltip"></i></label>
       </div>
       <div class="col-sm form-floating mb-3">
         <input
@@ -464,7 +537,7 @@
           title="{{ tooltips.txtDisplayOR }}"
           [(ngModel)]="addData.display_or"
         />
-        <label for="txtDisplayOR">Display (Odiya)</label>
+        <label for="txtDisplayOR">Display (Odiya) <i class="bi bi-info-circle-fill field-info-icon" [ngbTooltip]="tooltips.txtDisplayOR" placement="top" container="body" tooltipClass="field-tooltip"></i></label>
       </div>
     </div>
     <div class="row form-floating mb-3">
@@ -479,10 +552,10 @@
           title="{{ tooltips.txtDisplayMR }}"
           [(ngModel)]="addData.display_mr"
         />
-        <label for="txtDisplayMR">Display (Marathi)</label>
+        <label for="txtDisplayMR">Display (Marathi) <i class="bi bi-info-circle-fill field-info-icon" [ngbTooltip]="tooltips.txtDisplayMR" placement="top" container="body" tooltipClass="field-tooltip"></i></label>
       </div>
     </div>
-    <h6>Citation</h6>
+    <h6>Citation / उद्धरण <span class="text-danger">*</span></h6>
     <hr />
     <div class="row form-floating mb-3">
       <div class="col-sm form-floating mb-3">
@@ -497,7 +570,10 @@
           [(ngModel)]="addData.citation"
         >
         </textarea>
-        <label for="txtpopup">Citation</label>
+        <label for="txtcitation">Citation / उद्धरण <span class="text-danger">*</span> <i class="bi bi-info-circle-fill field-info-icon" [ngbTooltip]="tooltips.txtcitation" placement="top" container="body" tooltipClass="field-tooltip"></i></label>
+        <div *ngIf="myForm.get('txtcitation')?.invalid && myForm.get('txtcitation')?.touched" class="text-danger small mt-1">
+          Citation is required. / उद्धरण आवश्यक आहे.
+        </div>
       </div>
       <div class="col-sm form-floating mb-3">
         <input
@@ -510,7 +586,7 @@
           title="{{ tooltips.txtsnomed }}"
           [(ngModel)]="addData.snomed"
         />
-        <label for="txtsnomed">Snomed</label>
+        <label for="txtsnomed">Snomed <i class="bi bi-info-circle-fill field-info-icon" [ngbTooltip]="tooltips.txtsnomed" placement="top" container="body" tooltipClass="field-tooltip"></i></label>
       </div>
     </div>
 
@@ -526,7 +602,7 @@
           title="{{ tooltips.txticd }}"
           [(ngModel)]="addData.icd_11"
         />
-        <label for="txticd">ICD-11</label>
+        <label for="txticd">ICD-11 <i class="bi bi-info-circle-fill field-info-icon" [ngbTooltip]="tooltips.txticd" placement="top" container="body" tooltipClass="field-tooltip"></i></label>
       </div>
       <div class="col-sm form-floating mb-3">
         <input
@@ -539,7 +615,7 @@
           title="{{ tooltips.txtloinc }}"
           [(ngModel)]="addData.loinc"
         />
-        <label for="txtloinc">LOINC</label>
+        <label for="txtloinc">LOINC <i class="bi bi-info-circle-fill field-info-icon" [ngbTooltip]="tooltips.txtloinc" placement="top" container="body" tooltipClass="field-tooltip"></i></label>
       </div>
     </div>
     <div class="row form-floating mb-3">
@@ -554,7 +630,7 @@
           title="{{ tooltips.txtPosCon }}"
           [(ngModel)]="addData.pos_condition"
         />
-        <label for="txtPosCon">Positive Condition</label>
+        <label for="txtPosCon">Positive Condition <i class="bi bi-info-circle-fill field-info-icon" [ngbTooltip]="tooltips.txtPosCon" placement="top" container="body" tooltipClass="field-tooltip"></i></label>
       </div>
 
       <div class="col-sm form-floating mb-3" *ngIf="negativeCondition">
@@ -568,7 +644,7 @@
           title="{{ tooltips.txtNegCon }}"
           [(ngModel)]="addData.neg_condition"
         />
-        <label for="txtNegCon">Negative Condition</label>
+        <label for="txtNegCon">Negative Condition <i class="bi bi-info-circle-fill field-info-icon" [ngbTooltip]="tooltips.txtNegCon" placement="top" container="body" tooltipClass="field-tooltip"></i></label>
       </div>
     </div>
 

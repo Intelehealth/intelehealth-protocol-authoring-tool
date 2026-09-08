@@ -7,6 +7,7 @@ import { NgbActiveModal, NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { ModaldialogComponent } from '../modaldialog/modaldialog.component';
 import { ModaladdhealthdataComponent } from '../modaladdhealthdata/modaladdhealthdata.component';
 import { ModaledithealthdataComponent } from '../modaledithealthdata/modaledithealthdata.component';
+import { FieldGuideComponent } from '../field-guide/field-guide.component';
 import { FileService } from '../services/file.service';
 import { FhirService } from '../services/fhir.service';
 import { Router } from '@angular/router';
@@ -158,7 +159,12 @@ export class JsmindComponent implements OnInit {
       size: 'xl',
     }); 
 
-    modal.componentInstance.healthdata = {...selectedNode.data,topic:selectedNode.topic};
+    const strippedTopic = selectedNode.topic.replace(/<[^>]*>/g, '').trim();
+    const nodeIndex = selectedNode.data?.index;
+    const plainTopic = (nodeIndex !== undefined && nodeIndex !== null)
+      ? (strippedTopic.startsWith(`${nodeIndex} `) ? strippedTopic.slice(`${nodeIndex} `.length) : strippedTopic)
+      : strippedTopic;
+    modal.componentInstance.healthdata = {...selectedNode.data, topic: plainTopic};
     modal.result.then((res: IMindMapData) => {
       if (res) {
         let isEdit = this.editNode(res);
@@ -168,16 +174,21 @@ export class JsmindComponent implements OnInit {
       }
     });
   }
+  getDisplayTopic(mmData: IMindMapData): string {
+    return (mmData.index !== undefined && mmData.index !== null)
+      ? `<span class="node-index-badge">${mmData.index}</span> ${mmData.topic}`
+      : mmData.topic;
+  }
   addNode(mmData: IMindMapData): Result<string, string> {
     let selectedNode = this.mindMap.get_selected_node();
     if (!selectedNode) return Err('Please Select Node');
-    this.mindMap.add_node(selectedNode, mmData.id, mmData.topic, this.getMindmapAdditionalData(mmData));
+    this.mindMap.add_node(selectedNode, mmData.id, this.getDisplayTopic(mmData), this.getMindmapAdditionalData(mmData));
     return Ok('Node Added');
   }
   editNode(mmData: IMindMapData): Result<string, string> {
     let selectedNode = this.mindMap.get_selected_node();
     if (!selectedNode) return Err('Please Select Node');
-    this.mindMap.update_node(selectedNode.id, mmData.topic);
+    this.mindMap.update_node(selectedNode.id, this.getDisplayTopic(mmData));
     selectedNode.data = this.getMindmapAdditionalData(mmData);
     return Ok('Node Edited');
   }
@@ -200,15 +211,16 @@ export class JsmindComponent implements OnInit {
   }
   getJsonData() {
     var mind_data = this.mindMap.get_data('node_tree');
-    var mind_name = mind_data.meta.name;
+    var mind_name = mind_data.data.topic || mind_data.meta.name;
     var helth_data = this.dataService.getHealthData(mind_data.data);
     this._fileService.writeToFile(helth_data, jsMind.util.file, mind_name);
   }
   getFhirData() {
     var mind_data = this.mindMap.get_data('node_tree');
+    var mind_name = mind_data.data.topic || mind_data.meta.name;
     var helth_data = this.dataService.getHealthData(mind_data.data);
     var protocol_data = this._fileService.getFileData(helth_data);
-    this._fhirService.writeToFile(protocol_data, jsMind.util.file);
+    this._fhirService.writeToFile(protocol_data, jsMind.util.file, mind_name);
   }
   handleFileInput(event: Event) {
     this.file = (event.target as HTMLInputElement).files?.item(0);
@@ -241,6 +253,13 @@ export class JsmindComponent implements OnInit {
   }
   collapseNode() {
     this.mindMap.collapse_all();
+  }
+
+  openFieldGuide() {
+    this._modalService.open(FieldGuideComponent, {
+      size: 'xl',
+      scrollable: true,
+    });
   }
 
   getMindmapAdditionalData(mmData:IMindMapData){

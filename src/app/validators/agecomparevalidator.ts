@@ -5,22 +5,22 @@ import { ValidationErrors } from '@angular/forms';
 export const AgeCompareValidator: ValidatorFn = (
   control: AbstractControl
 ): ValidationErrors | null => {
-  const mStart = control.get('txtAgeMin')?.value;
-  const mEnd = control.get('txtAgeMax')?.value;
+  const minYear = control.get('txtAgeMinYear')?.value;
+  const minMonths = control.get('txtAgeMinMonths')?.value;
+  const minDays = control.get('txtAgeMinDays')?.value;
+  const maxYear = control.get('txtAgeMaxYear')?.value;
+  const maxMonths = control.get('txtAgeMaxMonths')?.value;
+  const maxDays = control.get('txtAgeMaxDays')?.value;
 
   const errors: ValidationErrors = {};
 
-  // Check for negative values
-  if (mStart && parseFloat(mStart) < 0) {
-    errors['negativeAgeMin'] = true;
-  }
-  if (mEnd && parseFloat(mEnd) < 0) {
-    errors['negativeAgeMax'] = true;
-  }
+  const hasMin = minYear != null || minMonths != null || minDays != null;
+  const hasMax = maxYear != null || maxMonths != null || maxDays != null;
 
-  // Compare fields only when both are valid positive numbers
-  if (mStart && mEnd && parseFloat(mStart) >= 0 && parseFloat(mEnd) >= 0) {
-    if (parseFloat(mStart) >= parseFloat(mEnd)) {
+  if (hasMin && hasMax) {
+    const totalMin = ((minYear || 0) * 365) + ((minMonths || 0) * 30) + (minDays || 0);
+    const totalMax = ((maxYear || 0) * 365) + ((maxMonths || 0) * 30) + (maxDays || 0);
+    if (totalMin >= totalMax) {
       errors['invalidDateRange'] = true;
     }
   }

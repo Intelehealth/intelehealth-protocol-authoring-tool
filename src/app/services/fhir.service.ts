@@ -18,11 +18,11 @@ const EXTENSION_MAP: { [key: string]: string } = {
   'perform-physical-exam': 'performPhysicalExam',
   'job-aid-type': 'job-aid-type',
   'job-aid-file': 'job-aid-file',
-  'associated-complaint': 'associated-complaint',
   'pop-up': 'pop-up',
   'exclude-from-multi-choice': 'exclude-from-multi-choice',
   'enable-exclusive-option': 'enable-exclusive-option',
   'is-exclusive-option': 'is-exclusive-option',
+  'is-exclusive': 'is-exclusive',
   'compare-duplicate-node': 'compare-duplicate-node',
 };
 
@@ -42,13 +42,20 @@ const ANSWER_OPTION_KEYS: { [key: string]: string } = {
 export class FhirService {
   constructor() {}
 
-  writeToFile(protocolData: any, fileSaver: any) {
+  writeToFile(protocolData: any, fileSaver: any, rootName?: string) {
     const questionnaire = this.buildQuestionnaire(protocolData);
+    const downloadFileName = (rootName || protocolData.text || 'protocol') + '_fhir.json';
     fileSaver.save(
       JSON.stringify(questionnaire, undefined, 2),
       'application/json',
-      this.generateOutputFilename(protocolData)
+      downloadFileName
     );
+  }
+
+  generateOutputFilename(name: string): string {
+    let protocolName = (name || 'protocol').toLowerCase().split(' ').join('_');
+    protocolName = protocolName.replace(/[^a-z0-9_]/g, '');
+    return `${protocolName}_questionnaire.json`;
   }
 
   buildQuestionnaire(root: any): any {
@@ -56,7 +63,7 @@ export class FhirService {
       resourceType: 'Questionnaire',
       id: this.sanitizeFhirId(root.id),
       title: root.text,
-      name: (root.text || '').split(' ').join(''),
+      name: (root.text || '').toLowerCase().split(' ').join('_').replace(/[^a-z0-9_]/g, ''),
       status: 'active',
       publisher: 'www.intelehealth.org',
       language: 'en',
@@ -95,12 +102,6 @@ export class FhirService {
     return String(value)
       .replace(/[^A-Za-z0-9\-.]/g, '-')
       .substring(0, 64);
-  }
-
-  private generateOutputFilename(root: any): string {
-    let protocolName = (root.text || 'protocol').toLowerCase().split(' ').join('_');
-    protocolName = protocolName.replace(/[^a-z0-9_]/g, '');
-    return `${protocolName}_questionnaire.json`;
   }
 
   private autoLinkId(): string {

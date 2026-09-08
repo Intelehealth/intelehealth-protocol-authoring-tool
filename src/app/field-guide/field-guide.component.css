@@ -1,0 +1,118 @@
+/* ── Modal header — same brand colour as .popup-save-btn ──── */
+.fg-modal-header {
+  background: #2E1E91;
+  color: #fff;
+}
+
+.fg-modal-header .modal-title {
+  color: #fff;
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+/* ── Empty state icon ──────────────────────────────────────── */
+.fg-empty-icon {
+  font-size: 2rem;
+  opacity: 0.3;
+}
+
+/* ── Field row separator ───────────────────────────────────── */
+.fg-field-row {
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+  padding-bottom: 0.75rem;
+  padding-top: 0.25rem;
+}
+
+.fg-field-row:last-child {
+  border-bottom: none;
+}
+
+/* ── Left column ───────────────────────────────────────────── */
+.fg-form-label {
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: #2E1E91;
+}
+
+/* key chip — light tint of brand colour */
+.fg-key-chip {
+  font-size: 0.72rem;
+  background: rgba(46, 30, 145, 0.08);
+  color: #2E1E91;
+  padding: 1px 6px;
+  border-radius: 4px;
+  border: 1px solid rgba(46, 30, 145, 0.2);
+}
+
+/* type pill — teal, matches jsmind node colour */
+.fg-type-pill {
+  font-size: 0.68rem;
+  font-weight: 500;
+  background: rgba(15, 209, 151, 0.12);
+  color: #068a61;
+  border: 1px solid rgba(15, 209, 151, 0.4);
+  border-radius: 20px;
+  padding: 1px 8px;
+  white-space: nowrap;
+}
+
+/* ── Right column ──────────────────────────────────────────── */
+.fg-plain-label {
+  font-weight: 600;
+  font-size: 0.95rem;
+  color: #1a1040;
+  margin-bottom: 0.25rem;
+}
+
+.fg-description {
+  font-size: 0.84rem;
+  color: #444;
+  line-height: 1.55;
+}
+
+/* conditional — orange, same as root-node colour (#FFA500) */
+.fg-conditional {
+  font-size: 0.76rem;
+  color: #7a4f00;
+  background: rgba(255, 165, 0, 0.1);
+  border: 1px solid rgba(255, 165, 0, 0.4);
+  border-radius: 4px;
+  padding: 3px 8px;
+  display: inline-block;
+}
+
+/* options block */
+.fg-options-title {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: #2E1E91;
+  margin-bottom: 3px;
+}
+
+.fg-option-row {
+  font-size: 0.79rem;
+  color: #444;
+  margin-bottom: 2px;
+}
+
+.fg-opt-val {
+  font-size: 0.72rem;
+  background: rgba(46, 30, 145, 0.08);
+  color: #2E1E91;
+  padding: 1px 5px;
+  border-radius: 3px;
+}
+
+.fg-opt-meaning {
+  color: #555;
+}
+
+/* example — green, same as jsmind default node colour */
+.fg-example {
+  font-size: 0.79rem;
+  color: #065f46;
+  background: rgba(15, 209, 151, 0.08);
+  border-left: 3px solid #0FD197;
+  padding: 3px 8px;
+  border-radius: 0 4px 4px 0;
+}
