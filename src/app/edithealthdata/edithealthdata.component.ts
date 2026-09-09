@@ -56,7 +56,7 @@ export class EdithealthdataComponent implements OnInit {
 
   myForm = new FormGroup(
     {
-      txtText: new FormControl(),
+      txtText: new FormControl('', Validators.required),
       txtDisplay: new FormControl(),
       ddisRequired: new FormControl(),
       ddMultiChoice: new FormControl(),
@@ -175,7 +175,7 @@ export class EdithealthdataComponent implements OnInit {
     if (this.ageMinYear != null || this.ageMinMonths != null || this.ageMinDays != null) {
       this.healthdata.age_min = {
         year: this.ageMinYear ?? 0,
-        months: this.ageMinMonths ?? 0,
+        month: this.ageMinMonths ?? 0,
         days: this.ageMinDays ?? 0
       };
     } else {
@@ -220,7 +220,7 @@ export class EdithealthdataComponent implements OnInit {
     if (this.ageMaxYear != null || this.ageMaxMonths != null || this.ageMaxDays != null) {
       this.healthdata.age_max = {
         year: this.ageMaxYear ?? 0,
-        months: this.ageMaxMonths ?? 0,
+        month: this.ageMaxMonths ?? 0,
         days: this.ageMaxDays ?? 0
       };
     } else {
@@ -251,7 +251,7 @@ export class EdithealthdataComponent implements OnInit {
     }
     if (this.healthdata.age_min) {
       this.ageMinYear = this.healthdata.age_min.year ?? null;
-      this.ageMinMonths = this.healthdata.age_min.months ?? null;
+      this.ageMinMonths = this.healthdata.age_min.month ?? null;
       this.ageMinDays = this.healthdata.age_min.days ?? null;
       this.myForm.patchValue({
         txtAgeMinYear: this.ageMinYear,
@@ -261,7 +261,7 @@ export class EdithealthdataComponent implements OnInit {
     }
     if (this.healthdata.age_max) {
       this.ageMaxYear = this.healthdata.age_max.year ?? null;
-      this.ageMaxMonths = this.healthdata.age_max.months ?? null;
+      this.ageMaxMonths = this.healthdata.age_max.month ?? null;
       this.ageMaxDays = this.healthdata.age_max.days ?? null;
       this.myForm.patchValue({
         txtAgeMaxYear: this.ageMaxYear,
@@ -343,6 +343,10 @@ export class EdithealthdataComponent implements OnInit {
   }
 
   onSubmit() {
+    this.myForm.markAllAsTouched();
+    if (!this.myForm.valid || this.indexError) {
+      return;
+    }
     this.onEdit.emit(this.healthdata);
   }
 }

@@ -10,6 +10,7 @@ import { ModaledithealthdataComponent } from '../modaledithealthdata/modaledithe
 import { FieldGuideComponent } from '../field-guide/field-guide.component';
 import { FileService } from '../services/file.service';
 import { FhirService } from '../services/fhir.service';
+import { AlertService } from '../services/alert.service';
 import { Router } from '@angular/router';
 declare var jsMind: any;
 const options = {
@@ -64,18 +65,16 @@ export class JsmindComponent implements OnInit {
   mindMap: any;
   title = 'Mindmap-SPA';
   isShown: boolean = false;
+  clipboard: IMindMapData | null = null;
   @HostListener('window:beforeunload', ['$event']) unloadHandler(event: Event) {
-    let result = confirm('Changes you made may not be saved.');
-    if (result) {
-      // Do more processing...
-    }
-    event.returnValue = false; // stay on same page
+    event.returnValue = false; // triggers the browser's native "leave page?" dialog
   }
   constructor(
     private dataService: MindmapService,
     private _modalService: NgbModal,
     private _fileService: FileService,
     private _fhirService: FhirService,
+    private _alertService: AlertService,
     private _router: Router
   ) {
     let show = this._router.getCurrentNavigation()?.extras.state;
@@ -120,17 +119,16 @@ export class JsmindComponent implements OnInit {
     let mmData = this.dataService.getMindMapData(hdata);
     let isAdd = this.addNode(mmData);
     if (isAdd.isErr()) {
-      alert(isAdd.unwrapErr());
+      this._alertService.showAlert(isAdd.unwrapErr());
     } else {
       hdata = { text: '' };
       this.isShown = false;
     }
   }
   addShow() {
-    //this.isShown = true;
     let selectedNode = this.mindMap.get_selected_node();
     if (!selectedNode) {
-      alert('Please Select Node');
+      this._alertService.showAlert('Please Select Node');
       return;
     }
 
@@ -142,7 +140,7 @@ export class JsmindComponent implements OnInit {
       if (res) {
         let isAdd = this.addNode(res);
         if (isAdd.isErr()) {
-          alert(isAdd.unwrapErr());
+          this._alertService.showAlert(isAdd.unwrapErr());
         }
       }
     });
@@ -151,13 +149,13 @@ export class JsmindComponent implements OnInit {
     let selectedNode = this.mindMap.get_selected_node();
     console.log(selectedNode);
     if (!selectedNode) {
-      alert('Please Select Node');
+      this._alertService.showAlert('Please Select Node');
       return;
     }
     let modal = this._modalService.open(ModaledithealthdataComponent, {
       backdrop: true,
       size: 'xl',
-    }); 
+    });
 
     const strippedTopic = selectedNode.topic.replace(/<[^>]*>/g, '').trim();
     const nodeIndex = selectedNode.data?.index;
@@ -169,7 +167,7 @@ export class JsmindComponent implements OnInit {
       if (res) {
         let isEdit = this.editNode(res);
         if (isEdit.isErr()) {
-          alert(isEdit.unwrapErr());
+          this._alertService.showAlert(isEdit.unwrapErr());
         }
       }
     });
@@ -193,20 +191,22 @@ export class JsmindComponent implements OnInit {
     return Ok('Node Edited');
   }
 
-  deleteNode() {
+  async deleteNode() {
     let selectedNode = this.mindMap.get_selected_node();
     if (!selectedNode) {
-      alert('Please Select Node to delete');
-    } else {
-      if(selectedNode.isroot){
-        alert("Parent Node cannot be deleted");
-      } else {
-        let answer = window.confirm('Are you sure you want to delete node?');
-        if (answer) {
-          this.mindMap.remove_node(selectedNode);
-          // alert('Node deleted');
-        }
-      }
+      this._alertService.showAlert('Please Select Node to delete');
+      return;
+    }
+    if (selectedNode.isroot) {
+      this._alertService.showAlert('Parent Node cannot be deleted');
+      return;
+    }
+    let answer = await this._alertService.showConfirm(
+      'Are you sure you want to delete node?',
+      'Confirm Delete'
+    );
+    if (answer) {
+      this.mindMap.remove_node(selectedNode);
     }
   }
   getJsonData() {
@@ -260,6 +260,61 @@ export class JsmindComponent implements OnInit {
       size: 'xl',
       scrollable: true,
     });
+  }
+
+  async copyNode() {
+    const selectedNode = this.mindMap.get_selected_node();
+    if (!selectedNode) {
+      await this._alertService.showAlert('Please select a node to copy');
+      return;
+    }
+    this.clipboard = this.cloneSubtree(selectedNode);
+    this._alertService.showAlert('Node copied! Select a parent node and click Paste.');
+  }
+
+  private cloneSubtree(node: any): IMindMapData {
+    const strippedTopic = node.topic.replace(/<[^>]*>/g, '').trim();
+    const nodeIndex = node.data?.index;
+    const plainTopic = (nodeIndex !== undefined && nodeIndex !== null)
+      ? (strippedTopic.startsWith(`${nodeIndex} `) ? strippedTopic.slice(`${nodeIndex} `.length) : strippedTopic)
+      : strippedTopic;
+    return {
+      ...node.data,
+      topic: plainTopic,
+      children: (node.children || []).map((child: any) => this.cloneSubtree(child))
+    };
+  }
+
+  async pasteNode() {
+    if (!this.clipboard) {
+      await this._alertService.showAlert('Nothing to paste. Copy a node first.');
+      return;
+    }
+    const selectedNode = this.mindMap.get_selected_node();
+    if (!selectedNode) {
+      await this._alertService.showAlert('Please select a node to paste under');
+      return;
+    }
+    this.pasteSubtree(this.clipboard, selectedNode);
+  }
+
+  private pasteSubtree(data: IMindMapData, parentNode: any) {
+    const newId = Math.random().toString();
+    this.mindMap.add_node(parentNode, newId, this.getDisplayTopic(data), this.getMindmapAdditionalData(data));
+    const newNode = this.mindMap.get_node(newId);
+    if (data.children && data.children.length > 0) {
+      for (const child of data.children) {
+        this.pasteSubtree(child, newNode);
+      }
+    }
+  }
+
+  @HostListener('document:keydown', ['$event'])
+  onKeyDown(event: KeyboardEvent) {
+    const tag = (event.target as HTMLElement).tagName.toLowerCase();
+    if (tag === 'input' || tag === 'textarea' || tag === 'select') return;
+    if (event.ctrlKey && event.key === 'c') { event.preventDefault(); this.copyNode(); }
+    if (event.ctrlKey && event.key === 'v') { event.preventDefault(); this.pasteNode(); }
   }
 
   getMindmapAdditionalData(mmData:IMindMapData){

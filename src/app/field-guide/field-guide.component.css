@@ -107,6 +107,27 @@
   color: #555;
 }
 
+/* ── Footer close button — matches navbar/theme ────────────── */
+.fg-close-btn {
+  background-color: #2E1E91;
+  color: #fff;
+  font-weight: 600;
+  font-size: 0.95rem;
+  padding: 8px 32px;
+  border-radius: 50px;
+  border: none;
+  transition: background 0.2s, transform 0.1s;
+}
+
+.fg-close-btn:hover {
+  background-color: #4B39B7;
+  color: #fff;
+}
+
+.fg-close-btn:active {
+  transform: scale(0.97);
+}
+
 /* example — green, same as jsmind default node colour */
 .fg-example {
   font-size: 0.79rem;

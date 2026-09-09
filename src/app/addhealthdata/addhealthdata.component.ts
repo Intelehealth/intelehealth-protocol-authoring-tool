@@ -63,7 +63,7 @@ export class AddhealthdataComponent implements OnInit {
 
   myForm = new FormGroup(
     {
-      txtText: new FormControl(),
+      txtText: new FormControl('', Validators.required),
       txtDisplay: new FormControl(),
       ddisRequired: new FormControl(),
       ddMultiChoice: new FormControl(),
@@ -182,7 +182,7 @@ export class AddhealthdataComponent implements OnInit {
     if (this.ageMinYear != null || this.ageMinMonths != null || this.ageMinDays != null) {
       this.addData.age_min = {
         year: this.ageMinYear ?? 0,
-        months: this.ageMinMonths ?? 0,
+        month: this.ageMinMonths ?? 0,
         days: this.ageMinDays ?? 0
       };
     } else {
@@ -227,7 +227,7 @@ export class AddhealthdataComponent implements OnInit {
     if (this.ageMaxYear != null || this.ageMaxMonths != null || this.ageMaxDays != null) {
       this.addData.age_max = {
         year: this.ageMaxYear ?? 0,
-        months: this.ageMaxMonths ?? 0,
+        month: this.ageMaxMonths ?? 0,
         days: this.ageMaxDays ?? 0
       };
     } else {
@@ -296,6 +296,10 @@ export class AddhealthdataComponent implements OnInit {
   }
 
   onSubmit() {
+    this.myForm.markAllAsTouched();
+    if (!this.myForm.valid || this.indexError) {
+      return;
+    }
     this.addData.id = Math.random().toString();
     this.onSave.emit(this.addData);
   }

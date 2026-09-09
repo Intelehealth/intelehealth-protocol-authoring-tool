@@ -39,6 +39,23 @@
         </button>
         <button
           type="button"
+          id="btnCopy"
+          class="btn navbar-buttons me-3"
+          (click)="copyNode()"
+        >
+          <i class="bi bi-clipboard"></i> Copy node
+        </button>
+        <button
+          type="button"
+          id="btnPaste"
+          class="btn navbar-buttons me-3"
+          (click)="pasteNode()"
+          [disabled]="!clipboard"
+        >
+          <i class="bi bi-clipboard-check"></i> Paste node
+        </button>
+        <button
+          type="button"
           id="btnJson"
           class="btn navbar-buttons me-3"
           (click)="getJsonData()"

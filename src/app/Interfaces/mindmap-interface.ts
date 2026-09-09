@@ -1,6 +1,6 @@
 export interface IAgeRange {
   year?: number | null;
-  months?: number | null;
+  month?: number | null;
   days?: number | null;
   value?: number;
 }

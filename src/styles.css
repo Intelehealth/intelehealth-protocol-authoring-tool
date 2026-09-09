@@ -1,5 +1,20 @@
 @import "~bootstrap-icons/font/bootstrap-icons.css";
 /* You can add global styles to this file, and also import other style files */
+
+/* ── Alert popup dialog width ───────────────────────────── */
+.alert-modal-dialog {
+  max-width: 420px;
+  width: 420px;
+  margin: auto;
+  border-radius: 8px;
+}
+
+.alert-modal-dialog .modal-content {
+  border: none;
+  border-radius: 8px;
+  box-shadow: 0 8px 32px rgba(46, 30, 145, 0.18), 0 2px 8px rgba(0,0,0,0.10);
+  overflow: hidden;
+}
 .xAxis path,
 .xAxis line {
   stroke: teal;

@@ -17,6 +17,7 @@ import { ModaledithealthdataComponent } from './modaledithealthdata/modaledithea
 import { EdithealthdataComponent } from './edithealthdata/edithealthdata.component';
 import { StartuppageComponent } from './startuppage/startuppage.component';
 import { FieldGuideComponent } from './field-guide/field-guide.component';
+import { AlertPopupComponent } from './alert-popup/alert-popup.component';
 
 @NgModule({
   declarations: [
@@ -29,6 +30,7 @@ import { FieldGuideComponent } from './field-guide/field-guide.component';
     EdithealthdataComponent,
     StartuppageComponent,
     FieldGuideComponent,
+    AlertPopupComponent,
   ],
   imports: [
     BrowserModule,
