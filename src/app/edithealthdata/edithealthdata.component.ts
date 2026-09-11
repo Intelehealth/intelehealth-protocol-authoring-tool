@@ -73,7 +73,7 @@ export class EdithealthdataComponent implements OnInit {
       txtPosCon: new FormControl(),
       txtNegCon: new FormControl(),
       txtPPE: new FormControl(),
-      txtcitation: new FormControl('', Validators.required),
+      txtcitation: new FormControl(),
       txtsnomed: new FormControl(),
       txticd: new FormControl(),
       txtloinc: new FormControl(),

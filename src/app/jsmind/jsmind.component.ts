@@ -132,6 +132,11 @@ export class JsmindComponent implements OnInit {
       return;
     }
 
+    if (selectedNode.data?.having_nested_question === false) {
+      this._alertService.showAlert('Cannot add a nested question: the parent node has "Having Nested Question" set to false.');
+      return;
+    }
+
     let modal = this._modalService.open(ModaladdhealthdataComponent, {
       backdrop: true,
       size: 'xl',
@@ -152,6 +157,9 @@ export class JsmindComponent implements OnInit {
       this._alertService.showAlert('Please Select Node');
       return;
     }
+
+    const originalHavingNestedQuestion = selectedNode.data?.having_nested_question;
+
     let modal = this._modalService.open(ModaledithealthdataComponent, {
       backdrop: true,
       size: 'xl',
@@ -163,8 +171,26 @@ export class JsmindComponent implements OnInit {
       ? (strippedTopic.startsWith(`${nodeIndex} `) ? strippedTopic.slice(`${nodeIndex} `.length) : strippedTopic)
       : strippedTopic;
     modal.componentInstance.healthdata = {...selectedNode.data, topic: plainTopic};
-    modal.result.then((res: IMindMapData) => {
+    modal.result.then(async (res: IMindMapData) => {
       if (res) {
+        if (
+          originalHavingNestedQuestion !== false &&
+          res.having_nested_question === false &&
+          selectedNode.children && selectedNode.children.length > 0
+        ) {
+          const confirmed = await this._alertService.showConfirm(
+            'This node has child questions. Setting "Having Nested Question" to false will remove all child nodes. Do you want to proceed?',
+            'Remove Child Nodes'
+          );
+          if (!confirmed) {
+            res.having_nested_question = originalHavingNestedQuestion;
+          } else {
+            const childrenToRemove = [...selectedNode.children];
+            for (const child of childrenToRemove) {
+              this.mindMap.remove_node(child);
+            }
+          }
+        }
         let isEdit = this.editNode(res);
         if (isEdit.isErr()) {
           this._alertService.showAlert(isEdit.unwrapErr());

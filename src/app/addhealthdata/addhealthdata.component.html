@@ -555,7 +555,7 @@
         <label for="txtDisplayMR">Display (Marathi) <i class="bi bi-info-circle-fill field-info-icon" [ngbTooltip]="tooltips.txtDisplayMR" placement="top" container="body" tooltipClass="field-tooltip"></i></label>
       </div>
     </div>
-    <h6>Citation / उद्धरण <span class="text-danger">*</span></h6>
+    <h6>Citation / उद्धरण</h6>
     <hr />
     <div class="row form-floating mb-3">
       <div class="col-sm form-floating mb-3">
@@ -570,10 +570,7 @@
           [(ngModel)]="addData.citation"
         >
         </textarea>
-        <label for="txtcitation">Citation / उद्धरण <span class="text-danger">*</span> <i class="bi bi-info-circle-fill field-info-icon" [ngbTooltip]="tooltips.txtcitation" placement="top" container="body" tooltipClass="field-tooltip"></i></label>
-        <div *ngIf="myForm.get('txtcitation')?.invalid && myForm.get('txtcitation')?.touched" class="text-danger small mt-1">
-          Citation is required. / उद्धरण आवश्यक आहे.
-        </div>
+        <label for="txtcitation">Citation / उद्धरण <i class="bi bi-info-circle-fill field-info-icon" [ngbTooltip]="tooltips.txtcitation" placement="top" container="body" tooltipClass="field-tooltip"></i></label>
       </div>
       <div class="col-sm form-floating mb-3">
         <input
