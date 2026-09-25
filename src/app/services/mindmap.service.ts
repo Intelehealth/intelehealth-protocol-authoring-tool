@@ -32,6 +32,10 @@ export class MindmapService {
       item.isRequired = healthdata.isRequired;
       item.multi_choice = healthdata.multi_choice;
       item.exclude_from_multi_choice = healthdata.exclude_from_multi_choice;
+      item.having_nested_question = healthdata.having_nested_question;
+      item.compare_duplicate_node = healthdata.compare_duplicate_node;
+      item.enable_exclusive_option = healthdata.enable_exclusive_option;
+      item.is_exclusive_option = healthdata.is_exclusive_option;
       item.display_or = healthdata.display_or;
       item.display_hi = healthdata.display_hi;
       item.display_mr = healthdata.display_mr;

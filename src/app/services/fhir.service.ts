@@ -294,13 +294,19 @@ export class FhirService {
       return;
     }
 
-    const containerPattern = options.every(
-      (opt: any) =>
-        opt.options &&
-        opt.options.length === 1 &&
-        opt.options[0].options &&
-        opt.options[0].options.length > 0
-    );
+    // A container is a section whose options are headings, each wrapping a single
+    // sub-question. A node that declares `multi-choice` was authored as a real
+    // question, so its options are answers and must stay in answerOption even when
+    // every branch happens to have exactly one follow-up.
+    const containerPattern =
+      !this.isQuestionNode(node) &&
+      options.every(
+        (opt: any) =>
+          opt.options &&
+          opt.options.length === 1 &&
+          opt.options[0].options &&
+          opt.options[0].options.length > 0
+      );
     if (containerPattern) {
       item.type = 'group';
       return;
@@ -487,6 +493,8 @@ export class FhirService {
         const grandchildren = option.options;
 
         if (
+          this.isQuestionNode(option) ||
+          this.hasBareAnswerChild(option) ||
           grandchildren.every(
             (gc: any) => !gc.options || gc.options.length === 0
           )
@@ -538,6 +546,17 @@ export class FhirService {
     if (children.length > 0) {
       item.item = children;
     }
+  }
+
+  private hasBareAnswerChild(node: any): boolean {
+    return (node.options || []).some(
+      (child: any) =>
+        (!child.options || child.options.length === 0) && !child['input-type']
+    );
+  }
+
+  private isQuestionNode(node: any): boolean {
+    return Object.prototype.hasOwnProperty.call(node, 'multi-choice');
   }
 
   private buildItem(
