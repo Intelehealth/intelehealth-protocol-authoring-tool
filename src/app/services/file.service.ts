@@ -18,6 +18,7 @@ export class FileService {
     'compare-duplicate-node':'compare_duplicate_node',
     'enable-exclusive-option':'enable_exclusive_option',
     'is-exclusive-option':'is_exclusive_option',
+    'is-exclusive':'is_exclusive',
     'display-or': 'display_or',
     'display-hi': 'display_hi',
     'display-mr': 'display_mr',
@@ -40,7 +41,6 @@ export class FileService {
     loinc: 'loinc',
     'job-aid-type': 'job_aid_type',
     'job-aid-file': 'job_aid_file',
-    'associated-complaint': 'associated_complaint',
   };
   globalData: IHealthData = {
     text: '',

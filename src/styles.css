@@ -1,5 +1,20 @@
 @import "~bootstrap-icons/font/bootstrap-icons.css";
 /* You can add global styles to this file, and also import other style files */
+
+/* ── Alert popup dialog width ───────────────────────────── */
+.alert-modal-dialog {
+  max-width: 420px;
+  width: 420px;
+  margin: auto;
+  border-radius: 8px;
+}
+
+.alert-modal-dialog .modal-content {
+  border: none;
+  border-radius: 8px;
+  box-shadow: 0 8px 32px rgba(46, 30, 145, 0.18), 0 2px 8px rgba(0,0,0,0.10);
+  overflow: hidden;
+}
 .xAxis path,
 .xAxis line {
   stroke: teal;
@@ -30,6 +45,31 @@
 
 body,html {
   height: 100%;
+}
+
+/* Field info icon tooltip */
+.field-tooltip .tooltip-inner {
+  background-color: #2E1E91;
+  color: #ffffff;
+  font-size: 0.8rem;
+  max-width: 260px;
+  text-align: left;
+}
+
+.field-tooltip.bs-tooltip-top .tooltip-arrow::before {
+  border-top-color: #2E1E91;
+}
+
+.field-tooltip.bs-tooltip-bottom .tooltip-arrow::before {
+  border-bottom-color: #2E1E91;
+}
+
+.field-tooltip.bs-tooltip-start .tooltip-arrow::before {
+  border-left-color: #2E1E91;
+}
+
+.field-tooltip.bs-tooltip-end .tooltip-arrow::before {
+  border-right-color: #2E1E91;
 }
 
 .form-floating>label{
@@ -65,6 +105,32 @@ canvas{position:absolute;z-index:1;}
 jmnodes{position:absolute;z-index:2;background-color:rgba(0,0,0,0);}/*background color is necessary*/
 jmnode{position:absolute;cursor:default;max-width:400px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 jmexpander{position:absolute;width:11px;height:11px;display:block;overflow:hidden;line-height:7px;font-size:12px;text-align:center;border-radius:6px;border-width:1px;border-style:solid;cursor:pointer;}
+
+/* Index badge on mindmap nodes */
+.node-index-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: #2E1E91;
+  color: #fff;
+  border: 1.5px solid #fff;
+  border-radius: 50%;
+  min-width: 20px;
+  height: 20px;
+  font-size: 11px;
+  font-weight: bold;
+  padding: 0 2px;
+  margin-right: 6px;
+  vertical-align: middle;
+  box-sizing: border-box;
+  transition: background 0.2s, color 0.2s, border-color 0.2s;
+  cursor: default;
+}
+.node-index-badge:hover {
+  background: #fff;
+  color: #2E1E91;
+  border-color: #2E1E91;
+}
 
 /* default theme */
 jmnode{

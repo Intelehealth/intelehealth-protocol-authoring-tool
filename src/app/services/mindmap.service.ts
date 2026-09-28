@@ -26,7 +26,9 @@ export class MindmapService {
     if (healthdata) {
       item.id = healthdata.id;
       item.index = healthdata.index;
-      item.topic = healthdata.text;
+      item.topic = (healthdata.index !== undefined && healthdata.index !== null)
+        ? `<span class="node-index-badge">${healthdata.index}</span> ${healthdata.text}`
+        : healthdata.text;
       item.perform_physical_exam = healthdata.perform_physical_exam;
       item.display = healthdata.display;
       item.isRequired = healthdata.isRequired;
@@ -36,6 +38,7 @@ export class MindmapService {
       item.compare_duplicate_node = healthdata.compare_duplicate_node;
       item.enable_exclusive_option = healthdata.enable_exclusive_option;
       item.is_exclusive_option = healthdata.is_exclusive_option;
+      item.is_exclusive = healthdata.is_exclusive;
       item.display_or = healthdata.display_or;
       item.display_hi = healthdata.display_hi;
       item.display_mr = healthdata.display_mr;
@@ -58,7 +61,6 @@ export class MindmapService {
       item.loinc = healthdata.loinc;
       item.job_aid_type = healthdata.job_aid_type;
       item.job_aid_file = healthdata.job_aid_file;
-      item.associated_complaint = healthdata.associated_complaint;
       item.children = [];
       if (healthdata.options && healthdata.options.length > 0) {
         healthdata.options.forEach((element, index) => {
@@ -83,6 +85,7 @@ export class MindmapService {
     data.compare_duplicate_node = '';
     data.enable_exclusive_option = null as any;
     data.is_exclusive_option = null as any;
+    data.is_exclusive = null as any;
     data.language = '';
     data.range_min = undefined;
     data.range_max = undefined;
@@ -94,7 +97,15 @@ export class MindmapService {
     if (mmdata) {
       item.id = mmdata.id;
       item.index = mmdata.index;
-      item.text = mmdata.topic;
+      const strippedTopic = mmdata.topic.replace(/<[^>]*>/g, '').trim();
+      if (mmdata.index !== undefined && mmdata.index !== null) {
+        const prefix = `${mmdata.index} `;
+        item.text = strippedTopic.startsWith(prefix)
+          ? strippedTopic.slice(prefix.length)
+          : strippedTopic;
+      } else {
+        item.text = strippedTopic;
+      }
       item.perform_physical_exam = mmdata.perform_physical_exam;
       item.display = mmdata.display;
       item.isRequired = mmdata.isRequired;
@@ -104,6 +115,7 @@ export class MindmapService {
       item.compare_duplicate_node = mmdata.compare_duplicate_node;
       item.enable_exclusive_option = mmdata.enable_exclusive_option;
       item.is_exclusive_option = mmdata.is_exclusive_option;
+      item.is_exclusive = mmdata.is_exclusive;
       item.display_or = mmdata.display_or;
       item.display_hi = mmdata.display_hi;
       item.display_mr = mmdata.display_mr;
@@ -126,7 +138,6 @@ export class MindmapService {
       item.loinc = mmdata.loinc;
       item.job_aid_type = mmdata.job_aid_type;
       item.job_aid_file = mmdata.job_aid_file;
-      item.associated_complaint = mmdata.associated_complaint;
       item.options = [];
       if (mmdata.children && mmdata.children.length > 0) {
         mmdata.children.forEach((element) => {

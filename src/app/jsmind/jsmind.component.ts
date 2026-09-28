@@ -7,8 +7,10 @@ import { NgbActiveModal, NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { ModaldialogComponent } from '../modaldialog/modaldialog.component';
 import { ModaladdhealthdataComponent } from '../modaladdhealthdata/modaladdhealthdata.component';
 import { ModaledithealthdataComponent } from '../modaledithealthdata/modaledithealthdata.component';
+import { FieldGuideComponent } from '../field-guide/field-guide.component';
 import { FileService } from '../services/file.service';
 import { FhirService } from '../services/fhir.service';
+import { AlertService } from '../services/alert.service';
 import { Router } from '@angular/router';
 declare var jsMind: any;
 const options = {
@@ -63,18 +65,16 @@ export class JsmindComponent implements OnInit {
   mindMap: any;
   title = 'Mindmap-SPA';
   isShown: boolean = false;
+  clipboard: IMindMapData | null = null;
   @HostListener('window:beforeunload', ['$event']) unloadHandler(event: Event) {
-    let result = confirm('Changes you made may not be saved.');
-    if (result) {
-      // Do more processing...
-    }
-    event.returnValue = false; // stay on same page
+    event.returnValue = false; // triggers the browser's native "leave page?" dialog
   }
   constructor(
     private dataService: MindmapService,
     private _modalService: NgbModal,
     private _fileService: FileService,
     private _fhirService: FhirService,
+    private _alertService: AlertService,
     private _router: Router
   ) {
     let show = this._router.getCurrentNavigation()?.extras.state;
@@ -119,17 +119,21 @@ export class JsmindComponent implements OnInit {
     let mmData = this.dataService.getMindMapData(hdata);
     let isAdd = this.addNode(mmData);
     if (isAdd.isErr()) {
-      alert(isAdd.unwrapErr());
+      this._alertService.showAlert(isAdd.unwrapErr());
     } else {
       hdata = { text: '' };
       this.isShown = false;
     }
   }
   addShow() {
-    //this.isShown = true;
     let selectedNode = this.mindMap.get_selected_node();
     if (!selectedNode) {
-      alert('Please Select Node');
+      this._alertService.showAlert('Please Select Node');
+      return;
+    }
+
+    if (selectedNode.data?.having_nested_question === false) {
+      this._alertService.showAlert('Cannot add a nested question: the parent node has "Having Nested Question" set to false.');
       return;
     }
 
@@ -141,7 +145,7 @@ export class JsmindComponent implements OnInit {
       if (res) {
         let isAdd = this.addNode(res);
         if (isAdd.isErr()) {
-          alert(isAdd.unwrapErr());
+          this._alertService.showAlert(isAdd.unwrapErr());
         }
       }
     });
@@ -150,65 +154,99 @@ export class JsmindComponent implements OnInit {
     let selectedNode = this.mindMap.get_selected_node();
     console.log(selectedNode);
     if (!selectedNode) {
-      alert('Please Select Node');
+      this._alertService.showAlert('Please Select Node');
       return;
     }
+
+    const originalHavingNestedQuestion = selectedNode.data?.having_nested_question;
+
     let modal = this._modalService.open(ModaledithealthdataComponent, {
       backdrop: true,
       size: 'xl',
-    }); 
+    });
 
-    modal.componentInstance.healthdata = {...selectedNode.data,topic:selectedNode.topic};
-    modal.result.then((res: IMindMapData) => {
+    const strippedTopic = selectedNode.topic.replace(/<[^>]*>/g, '').trim();
+    const nodeIndex = selectedNode.data?.index;
+    const plainTopic = (nodeIndex !== undefined && nodeIndex !== null)
+      ? (strippedTopic.startsWith(`${nodeIndex} `) ? strippedTopic.slice(`${nodeIndex} `.length) : strippedTopic)
+      : strippedTopic;
+    modal.componentInstance.healthdata = {...selectedNode.data, topic: plainTopic};
+    modal.result.then(async (res: IMindMapData) => {
       if (res) {
+        if (
+          originalHavingNestedQuestion !== false &&
+          res.having_nested_question === false &&
+          selectedNode.children && selectedNode.children.length > 0
+        ) {
+          const confirmed = await this._alertService.showConfirm(
+            'This node has child questions. Setting "Having Nested Question" to false will remove all child nodes. Do you want to proceed?',
+            'Remove Child Nodes'
+          );
+          if (!confirmed) {
+            res.having_nested_question = originalHavingNestedQuestion;
+          } else {
+            const childrenToRemove = [...selectedNode.children];
+            for (const child of childrenToRemove) {
+              this.mindMap.remove_node(child);
+            }
+          }
+        }
         let isEdit = this.editNode(res);
         if (isEdit.isErr()) {
-          alert(isEdit.unwrapErr());
+          this._alertService.showAlert(isEdit.unwrapErr());
         }
       }
     });
   }
+  getDisplayTopic(mmData: IMindMapData): string {
+    return (mmData.index !== undefined && mmData.index !== null)
+      ? `<span class="node-index-badge">${mmData.index}</span> ${mmData.topic}`
+      : mmData.topic;
+  }
   addNode(mmData: IMindMapData): Result<string, string> {
     let selectedNode = this.mindMap.get_selected_node();
     if (!selectedNode) return Err('Please Select Node');
-    this.mindMap.add_node(selectedNode, mmData.id, mmData.topic, this.getMindmapAdditionalData(mmData));
+    this.mindMap.add_node(selectedNode, mmData.id, this.getDisplayTopic(mmData), this.getMindmapAdditionalData(mmData));
     return Ok('Node Added');
   }
   editNode(mmData: IMindMapData): Result<string, string> {
     let selectedNode = this.mindMap.get_selected_node();
     if (!selectedNode) return Err('Please Select Node');
-    this.mindMap.update_node(selectedNode.id, mmData.topic);
+    this.mindMap.update_node(selectedNode.id, this.getDisplayTopic(mmData));
     selectedNode.data = this.getMindmapAdditionalData(mmData);
     return Ok('Node Edited');
   }
 
-  deleteNode() {
+  async deleteNode() {
     let selectedNode = this.mindMap.get_selected_node();
     if (!selectedNode) {
-      alert('Please Select Node to delete');
-    } else {
-      if(selectedNode.isroot){
-        alert("Parent Node cannot be deleted");
-      } else {
-        let answer = window.confirm('Are you sure you want to delete node?');
-        if (answer) {
-          this.mindMap.remove_node(selectedNode);
-          // alert('Node deleted');
-        }
-      }
+      this._alertService.showAlert('Please Select Node to delete');
+      return;
+    }
+    if (selectedNode.isroot) {
+      this._alertService.showAlert('Parent Node cannot be deleted');
+      return;
+    }
+    let answer = await this._alertService.showConfirm(
+      'Are you sure you want to delete node?',
+      'Confirm Delete'
+    );
+    if (answer) {
+      this.mindMap.remove_node(selectedNode);
     }
   }
   getJsonData() {
     var mind_data = this.mindMap.get_data('node_tree');
-    var mind_name = mind_data.meta.name;
+    var mind_name = mind_data.data.topic || mind_data.meta.name;
     var helth_data = this.dataService.getHealthData(mind_data.data);
     this._fileService.writeToFile(helth_data, jsMind.util.file, mind_name);
   }
   getFhirData() {
     var mind_data = this.mindMap.get_data('node_tree');
+    var mind_name = mind_data.data.topic || mind_data.meta.name;
     var helth_data = this.dataService.getHealthData(mind_data.data);
     var protocol_data = this._fileService.getFileData(helth_data);
-    this._fhirService.writeToFile(protocol_data, jsMind.util.file);
+    this._fhirService.writeToFile(protocol_data, jsMind.util.file, mind_name);
   }
   handleFileInput(event: Event) {
     this.file = (event.target as HTMLInputElement).files?.item(0);
@@ -241,6 +279,68 @@ export class JsmindComponent implements OnInit {
   }
   collapseNode() {
     this.mindMap.collapse_all();
+  }
+
+  openFieldGuide() {
+    this._modalService.open(FieldGuideComponent, {
+      size: 'xl',
+      scrollable: true,
+    });
+  }
+
+  async copyNode() {
+    const selectedNode = this.mindMap.get_selected_node();
+    if (!selectedNode) {
+      await this._alertService.showAlert('Please select a node to copy');
+      return;
+    }
+    this.clipboard = this.cloneSubtree(selectedNode);
+    this._alertService.showAlert('Node copied! Select a parent node and click Paste.');
+  }
+
+  private cloneSubtree(node: any): IMindMapData {
+    const strippedTopic = node.topic.replace(/<[^>]*>/g, '').trim();
+    const nodeIndex = node.data?.index;
+    const plainTopic = (nodeIndex !== undefined && nodeIndex !== null)
+      ? (strippedTopic.startsWith(`${nodeIndex} `) ? strippedTopic.slice(`${nodeIndex} `.length) : strippedTopic)
+      : strippedTopic;
+    return {
+      ...node.data,
+      topic: plainTopic,
+      children: (node.children || []).map((child: any) => this.cloneSubtree(child))
+    };
+  }
+
+  async pasteNode() {
+    if (!this.clipboard) {
+      await this._alertService.showAlert('Nothing to paste. Copy a node first.');
+      return;
+    }
+    const selectedNode = this.mindMap.get_selected_node();
+    if (!selectedNode) {
+      await this._alertService.showAlert('Please select a node to paste under');
+      return;
+    }
+    this.pasteSubtree(this.clipboard, selectedNode);
+  }
+
+  private pasteSubtree(data: IMindMapData, parentNode: any) {
+    const newId = Math.random().toString();
+    this.mindMap.add_node(parentNode, newId, this.getDisplayTopic(data), this.getMindmapAdditionalData(data));
+    const newNode = this.mindMap.get_node(newId);
+    if (data.children && data.children.length > 0) {
+      for (const child of data.children) {
+        this.pasteSubtree(child, newNode);
+      }
+    }
+  }
+
+  @HostListener('document:keydown', ['$event'])
+  onKeyDown(event: KeyboardEvent) {
+    const tag = (event.target as HTMLElement).tagName.toLowerCase();
+    if (tag === 'input' || tag === 'textarea' || tag === 'select') return;
+    if (event.ctrlKey && event.key === 'c') { event.preventDefault(); this.copyNode(); }
+    if (event.ctrlKey && event.key === 'v') { event.preventDefault(); this.pasteNode(); }
   }
 
   getMindmapAdditionalData(mmData:IMindMapData){
