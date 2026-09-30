@@ -4,6 +4,7 @@ import { AgeCompareValidator, RangeCompareValidator } from '../validators/agecom
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { IMindMapData } from '../Interfaces/mindmap-interface';
 import { MindmapService } from '../services/mindmap.service';
+import { ClinicalLanguageService } from '../services/clinical-language.service';
 @Component({
   selector: 'app-addhealthdata',
   templateUrl: './addhealthdata.component.html',
@@ -11,6 +12,9 @@ import { MindmapService } from '../services/mindmap.service';
 })
 export class AddhealthdataComponent implements OnInit {
   @Output() onSave = new EventEmitter<IMindMapData>();
+  @Input() public ancestorPath: string[] = [];
+  @Input() public siblingTopics: string[] = [];
+  @Input() public parentLanguage: string = '';
   addData: IMindMapData = {
     topic: 'Enter Text',
     input_type: '',
@@ -116,6 +120,10 @@ export class AddhealthdataComponent implements OnInit {
   ageMaxDays: number | null = null;
 
   indexError: boolean = false;
+
+  suggestingLanguage: boolean = false;
+  languageSuggestionReason: string = '';
+  languageSuggestionError: string = '';
 
   yearOptions = Array.from({ length: 121 }, (_, i) => i);
   monthOptions = Array.from({ length: 12 }, (_, i) => i);
@@ -235,7 +243,43 @@ export class AddhealthdataComponent implements OnInit {
     }
   }
 
-  constructor(public modal: NgbActiveModal, private mindmapService: MindmapService) {}
+  constructor(
+    public modal: NgbActiveModal,
+    private mindmapService: MindmapService,
+    private clinicalLanguage: ClinicalLanguageService
+  ) {}
+
+  get canSuggestLanguage(): boolean {
+    return this.clinicalLanguage.isConfigured;
+  }
+
+  async suggestLanguage() {
+    if (this.suggestingLanguage) return;
+    this.suggestingLanguage = true;
+    this.languageSuggestionError = '';
+    this.languageSuggestionReason = '';
+    try {
+      const suggestion = await this.clinicalLanguage.suggest({
+        path: this.ancestorPath,
+        text: this.addData.topic,
+        display: this.addData.display,
+        inputType: this.addData.input_type,
+        children: [],
+        siblings: this.siblingTopics,
+        parentLanguage: this.parentLanguage,
+        multiChoice: this.addData.multi_choice,
+        isExclusiveOption: this.addData.is_exclusive_option,
+      });
+      this.addData.language = suggestion.language;
+      this.myForm.controls.txtLanguage.setValue(suggestion.language);
+      this.languageSuggestionReason = suggestion.reasoning;
+    } catch (e: any) {
+      this.languageSuggestionError =
+        e?.message ?? 'Could not get a suggestion. Please try again.';
+    } finally {
+      this.suggestingLanguage = false;
+    }
+  }
 
   ngOnInit() {}
 

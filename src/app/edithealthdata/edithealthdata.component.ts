@@ -6,6 +6,7 @@ import { AgeCompareValidator, RangeCompareValidator } from '../validators/agecom
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { IMindMapData } from '../Interfaces/mindmap-interface';
 import { MindmapService } from '../services/mindmap.service';
+import { ClinicalLanguageService } from '../services/clinical-language.service';
 @Component({
   selector: 'app-edithealthdata',
   templateUrl: './edithealthdata.component.html',
@@ -16,6 +17,11 @@ export class EdithealthdataComponent implements OnInit {
   @Input() public healthdata: IMindMapData = {
     topic: ''
   };
+  @Input() public ancestorPath: string[] = [];
+  @Input() public childTopics: string[] = [];
+  @Input() public siblingTopics: string[] = [];
+  @Input() public parentLanguage: string = '';
+  @Input() public childLanguages: string[] = [];
 
   tooltips = {
     txtText: "The internal node identifier used in the mind map and JSON export. This is the technical key/topic for this question or answer option.",
@@ -109,6 +115,10 @@ export class EdithealthdataComponent implements OnInit {
   ageMaxDays: number | null = null;
 
   indexError: boolean = false;
+
+  suggestingLanguage: boolean = false;
+  languageSuggestionReason: string = '';
+  languageSuggestionError: string = '';
 
   yearOptions = Array.from({ length: 121 }, (_, i) => i);
   monthOptions = Array.from({ length: 12 }, (_, i) => i);
@@ -228,7 +238,44 @@ export class EdithealthdataComponent implements OnInit {
     }
   }
 
-  constructor(public modal: NgbActiveModal, private mindmapService: MindmapService) {}
+  constructor(
+    public modal: NgbActiveModal,
+    private mindmapService: MindmapService,
+    private clinicalLanguage: ClinicalLanguageService
+  ) {}
+
+  get canSuggestLanguage(): boolean {
+    return this.clinicalLanguage.isConfigured;
+  }
+
+  async suggestLanguage() {
+    if (this.suggestingLanguage) return;
+    this.suggestingLanguage = true;
+    this.languageSuggestionError = '';
+    this.languageSuggestionReason = '';
+    try {
+      const suggestion = await this.clinicalLanguage.suggest({
+        path: this.ancestorPath,
+        text: this.healthdata.topic,
+        display: this.healthdata.display,
+        inputType: this.healthdata.input_type,
+        children: this.childTopics,
+        siblings: this.siblingTopics,
+        parentLanguage: this.parentLanguage,
+        childLanguages: this.childLanguages,
+        multiChoice: this.healthdata.multi_choice,
+        isExclusiveOption: this.healthdata.is_exclusive_option,
+      });
+      this.healthdata.language = suggestion.language;
+      this.myForm.controls.txtLanguage.setValue(suggestion.language);
+      this.languageSuggestionReason = suggestion.reasoning;
+    } catch (e: any) {
+      this.languageSuggestionError =
+        e?.message ?? 'Could not get a suggestion. Please try again.';
+    } finally {
+      this.suggestingLanguage = false;
+    }
+  }
 
   private isOtherOption(text: string): boolean {
     const normalized = text.trim().toLowerCase();

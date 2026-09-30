@@ -11,6 +11,11 @@ export class ModaledithealthdataComponent implements OnInit {
   @Input() public healthdata: IMindMapData = {
     topic: ''
   };
+  @Input() public ancestorPath: string[] = [];
+  @Input() public childTopics: string[] = [];
+  @Input() public siblingTopics: string[] = [];
+  @Input() public parentLanguage: string = '';
+  @Input() public childLanguages: string[] = [];
   constructor(public modal: NgbActiveModal) {}
 
   ngOnInit(): void {}
