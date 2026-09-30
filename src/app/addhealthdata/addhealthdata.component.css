@@ -24,3 +24,23 @@
     font-weight: 500;
 }
 
+.form-floating > .form-control:not(:placeholder-shown) ~ label,
+.form-floating > .form-control:focus ~ label,
+.form-floating > .form-select ~ label {
+    opacity: 1;
+}
+
+.field-info-icon {
+    font-size: 0.85rem;
+    color: #2E1E91;
+    opacity: 1 !important;
+    cursor: pointer;
+    pointer-events: auto;
+    vertical-align: middle;
+    margin-left: 4px;
+}
+
+.field-info-icon:hover {
+    color: #1e1361;
+}
+

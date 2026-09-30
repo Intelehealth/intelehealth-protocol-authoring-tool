@@ -13,6 +13,7 @@ export interface IHealthData {
   compare_duplicate_node?: string;
   enable_exclusive_option?:boolean;
   is_exclusive_option?:boolean;
+  is_exclusive?:boolean;
   display_or?: string;
   display_hi?: string;
   display_mr?: string;
@@ -35,6 +36,5 @@ export interface IHealthData {
   loinc?: string;
   job_aid_type?: string;
   job_aid_file?: string;
-  associated_complaint?: string;
   options?: Array<IHealthData>;
 }

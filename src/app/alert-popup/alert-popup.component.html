@@ -1,0 +1,35 @@
+<div class="popup-header" [ngClass]="type === 'confirm' ? 'popup-header--confirm' : 'popup-header--alert'">
+  <h5 class="popup-title">
+    <span class="popup-header-icon">
+      <i *ngIf="type === 'alert'" class="bi bi-info-circle-fill"></i>
+      <i *ngIf="type === 'confirm'" class="bi bi-exclamation-triangle-fill"></i>
+    </span>
+    {{ title }}
+  </h5>
+  <button type="button" class="btn-close btn-close-white" (click)="modal.dismiss()"></button>
+</div>
+
+<div class="popup-body">
+  <div class="popup-icon-circle" [ngClass]="type === 'confirm' ? 'icon-circle--confirm' : 'icon-circle--alert'">
+    <i *ngIf="type === 'alert'" class="bi bi-info-circle-fill"></i>
+    <i *ngIf="type === 'confirm'" class="bi bi-exclamation-triangle-fill"></i>
+  </div>
+  <p class="popup-message">{{ message }}</p>
+</div>
+
+<div class="popup-footer">
+  <ng-container *ngIf="type === 'alert'">
+    <button type="button" class="btn popup-btn popup-btn--ok" (click)="modal.close(true)">
+      OK
+    </button>
+  </ng-container>
+
+  <ng-container *ngIf="type === 'confirm'">
+    <button type="button" class="btn popup-btn popup-btn--cancel" (click)="modal.dismiss(false)">
+      Cancel
+    </button>
+    <button type="button" class="btn popup-btn popup-btn--confirm" (click)="modal.close(true)">
+      <i class="bi bi-trash me-1"></i> Yes, Delete
+    </button>
+  </ng-container>
+</div>
