@@ -1,3 +1,8 @@
 <app-modaldialog title="Add Data">
-  <app-addhealthdata (onSave)="saveData($event)"> </app-addhealthdata>
+  <app-addhealthdata
+    [ancestorPath]="ancestorPath"
+    [siblingTopics]="siblingTopics"
+    [parentLanguage]="parentLanguage"
+    (onSave)="saveData($event)"
+  > </app-addhealthdata>
 </app-modaldialog>

@@ -303,19 +303,39 @@
       </div>
     </div>
 
-    <div class="row form-floating mb-3">
-      <div class="col-6 form-floating mb-3">
-        <input
-          type="text"
-          class="form-control"
-          id="txtLanguage"
-          placeholder=""
-          name="txtLanguage"
-          [(ngModel)]="healthdata.language"
-          formControlName="txtLanguage"
-          title="{{ tooltips.txtLanguage }}"
-        />
-        <label for="txtLanguage">Language to be shown in history note</label>
+    <div class="row mb-3">
+      <div class="col-6">
+        <div class="input-group">
+          <div class="form-floating flex-grow-1">
+            <input
+              type="text"
+              class="form-control"
+              id="txtLanguage"
+              placeholder=""
+              name="txtLanguage"
+              [(ngModel)]="healthdata.language"
+              formControlName="txtLanguage"
+              title="{{ tooltips.txtLanguage }}"
+            />
+            <label for="txtLanguage">Language to be shown in history note</label>
+          </div>
+          <button
+            *ngIf="canSuggestLanguage"
+            type="button"
+            class="btn btn-outline-primary"
+            (click)="suggestLanguage()"
+            [disabled]="suggestingLanguage"
+            title="Suggest clinical phrasing for the history note"
+          >
+            {{ suggestingLanguage ? "Suggesting..." : "Suggest" }}
+          </button>
+        </div>
+        <small *ngIf="languageSuggestionReason" class="text-muted d-block mt-1">
+          Suggested: {{ languageSuggestionReason }} Review before saving.
+        </small>
+        <small *ngIf="languageSuggestionError" class="text-danger d-block mt-1">
+          {{ languageSuggestionError }}
+        </small>
       </div>
     </div>
     <div class="row form-floating mb-3">

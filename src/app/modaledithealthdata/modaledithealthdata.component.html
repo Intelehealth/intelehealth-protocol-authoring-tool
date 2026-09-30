@@ -1,6 +1,11 @@
 <app-modaldialog title="Edit Data">
   <app-edithealthdata
     [healthdata]="healthdata"
+    [ancestorPath]="ancestorPath"
+    [childTopics]="childTopics"
+    [siblingTopics]="siblingTopics"
+    [parentLanguage]="parentLanguage"
+    [childLanguages]="childLanguages"
     (onEdit)="editData($event)"
   ></app-edithealthdata>
 </app-modaldialog>

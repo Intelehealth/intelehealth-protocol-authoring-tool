@@ -6,6 +6,7 @@ import { AgeCompareValidator, RangeCompareValidator } from '../validators/agecom
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { IAgeRange, IMindMapData } from '../Interfaces/mindmap-interface';
 import { MindmapService } from '../services/mindmap.service';
+import { ClinicalLanguageService } from '../services/clinical-language.service';
 @Component({
   selector: 'app-edithealthdata',
   templateUrl: './edithealthdata.component.html',
@@ -16,6 +17,11 @@ export class EdithealthdataComponent implements OnInit {
   @Input() public healthdata: IMindMapData = {
     topic: ''
   };
+  @Input() public ancestorPath: string[] = [];
+  @Input() public childTopics: string[] = [];
+  @Input() public siblingTopics: string[] = [];
+  @Input() public parentLanguage: string = '';
+  @Input() public childLanguages: string[] = [];
 
   tooltips = {
     txtText: "Edit Text",
@@ -101,6 +107,10 @@ export class EdithealthdataComponent implements OnInit {
   ageMaxRaw: string = '';
   indexError: boolean = false;
 
+  suggestingLanguage: boolean = false;
+  languageSuggestionReason: string = '';
+  languageSuggestionError: string = '';
+
   decimalToAgeRange(decimalYears: number): IAgeRange {
     const year = Math.floor(decimalYears);
     const monthValue = (decimalYears - year) * 12;
@@ -120,7 +130,44 @@ export class EdithealthdataComponent implements OnInit {
     this.healthdata.age_max = (!isNaN(val) && val >= 0) ? { ...this.decimalToAgeRange(val), value: val } : undefined;
   }
 
-  constructor(public modal: NgbActiveModal, private mindmapService: MindmapService) {}
+  constructor(
+    public modal: NgbActiveModal,
+    private mindmapService: MindmapService,
+    private clinicalLanguage: ClinicalLanguageService
+  ) {}
+
+  get canSuggestLanguage(): boolean {
+    return this.clinicalLanguage.isConfigured;
+  }
+
+  async suggestLanguage() {
+    if (this.suggestingLanguage) return;
+    this.suggestingLanguage = true;
+    this.languageSuggestionError = '';
+    this.languageSuggestionReason = '';
+    try {
+      const suggestion = await this.clinicalLanguage.suggest({
+        path: this.ancestorPath,
+        text: this.healthdata.topic,
+        display: this.healthdata.display,
+        inputType: this.healthdata.input_type,
+        children: this.childTopics,
+        siblings: this.siblingTopics,
+        parentLanguage: this.parentLanguage,
+        childLanguages: this.childLanguages,
+        multiChoice: this.healthdata.multi_choice,
+        isExclusiveOption: this.healthdata.is_exclusive_option,
+      });
+      this.healthdata.language = suggestion.language;
+      this.myForm.controls.txtLanguage.setValue(suggestion.language);
+      this.languageSuggestionReason = suggestion.reasoning;
+    } catch (e: any) {
+      this.languageSuggestionError =
+        e?.message ?? 'Could not get a suggestion. Please try again.';
+    } finally {
+      this.suggestingLanguage = false;
+    }
+  }
 
   ngOnInit(): void {
     if (

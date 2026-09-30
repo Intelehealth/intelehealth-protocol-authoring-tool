@@ -125,6 +125,34 @@ export class JsmindComponent implements OnInit {
       this.isShown = false;
     }
   }
+  private ancestorPath(node: any): string[] {
+    const path: string[] = [];
+    for (let n = node?.parent; n; n = n.parent) {
+      path.unshift(n.topic);
+    }
+    return path;
+  }
+
+  private childTopics(node: any): string[] {
+    return (node?.children ?? []).map((c: any) => c.topic);
+  }
+
+  private parentLanguage(node: any): string {
+    return node?.parent?.data?.language ?? '';
+  }
+
+  private childLanguages(node: any): string[] {
+    return (node?.children ?? [])
+      .map((c: any) => c.data?.language)
+      .filter((v: any) => !!v);
+  }
+
+  private siblingTopics(node: any): string[] {
+    return (node?.parent?.children ?? [])
+      .filter((c: any) => c.id !== node.id)
+      .map((c: any) => c.topic);
+  }
+
   addShow() {
     //this.isShown = true;
     let selectedNode = this.mindMap.get_selected_node();
@@ -137,6 +165,12 @@ export class JsmindComponent implements OnInit {
       backdrop: true,
       size: 'xl',
     });
+    modal.componentInstance.ancestorPath = [
+      ...this.ancestorPath(selectedNode),
+      selectedNode.topic,
+    ];
+    modal.componentInstance.siblingTopics = this.childTopics(selectedNode);
+    modal.componentInstance.parentLanguage = selectedNode.data?.language ?? '';
     modal.result.then((res: IMindMapData) => {
       if (res) {
         let isAdd = this.addNode(res);
@@ -159,6 +193,11 @@ export class JsmindComponent implements OnInit {
     }); 
 
     modal.componentInstance.healthdata = {...selectedNode.data,topic:selectedNode.topic};
+    modal.componentInstance.ancestorPath = this.ancestorPath(selectedNode);
+    modal.componentInstance.childTopics = this.childTopics(selectedNode);
+    modal.componentInstance.siblingTopics = this.siblingTopics(selectedNode);
+    modal.componentInstance.parentLanguage = this.parentLanguage(selectedNode);
+    modal.componentInstance.childLanguages = this.childLanguages(selectedNode);
     modal.result.then((res: IMindMapData) => {
       if (res) {
         let isEdit = this.editNode(res);
