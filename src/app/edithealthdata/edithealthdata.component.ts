@@ -120,6 +120,12 @@ export class EdithealthdataComponent implements OnInit {
   languageSuggestionReason: string = '';
   languageSuggestionError: string = '';
 
+  suggestingText: boolean = false;
+  textSuggestionReason: string = '';
+  textSuggestionError: string = '';
+  private lastSuggestedForDisplay: string = '';
+  private lastSuggestedForText: string = '';
+
   yearOptions = Array.from({ length: 121 }, (_, i) => i);
   monthOptions = Array.from({ length: 12 }, (_, i) => i);
 
@@ -248,8 +254,50 @@ export class EdithealthdataComponent implements OnInit {
     return this.clinicalLanguage.isConfigured;
   }
 
+  /** Auto-suggests the Text value once the author leaves the Display field. */
+  async onDisplayBlur() {
+    const display = (this.healthdata.display ?? '').trim();
+    if (!this.canSuggestLanguage) return;
+    if (!display || display === this.lastSuggestedForDisplay) return;
+    if (this.suggestingText) return;
+
+    this.suggestingText = true;
+    this.textSuggestionError = '';
+    this.textSuggestionReason = '';
+    try {
+      const suggestion = await this.clinicalLanguage.suggestText({
+        path: this.ancestorPath,
+        display,
+        inputType: this.healthdata.input_type,
+        children: this.childTopics,
+        siblings: this.siblingTopics,
+      });
+      this.lastSuggestedForDisplay = display;
+      if (suggestion.text) {
+        this.healthdata.topic = suggestion.text;
+        this.myForm.controls.txtText.setValue(suggestion.text);
+        this.textSuggestionReason = suggestion.reasoning;
+        this.applyTopicRules(suggestion.text);
+        await this.suggestLanguage();
+      }
+    } catch (e: any) {
+      this.textSuggestionError =
+        e?.message ?? 'Could not suggest a Text value. Please try again.';
+    } finally {
+      this.suggestingText = false;
+    }
+  }
+
+  /** Auto-suggests the history-note language once the author leaves the Text field. */
+  async onTextBlur() {
+    if (this.suggestingText) return;
+    await this.suggestLanguage();
+  }
+
   async suggestLanguage() {
-    if (this.suggestingLanguage) return;
+    const text = (this.healthdata.topic ?? '').trim();
+    if (!this.canSuggestLanguage || !text) return;
+    if (this.suggestingLanguage || text === this.lastSuggestedForText) return;
     this.suggestingLanguage = true;
     this.languageSuggestionError = '';
     this.languageSuggestionReason = '';
@@ -266,6 +314,7 @@ export class EdithealthdataComponent implements OnInit {
         multiChoice: this.healthdata.multi_choice,
         isExclusiveOption: this.healthdata.is_exclusive_option,
       });
+      this.lastSuggestedForText = text;
       this.healthdata.language = suggestion.language;
       this.myForm.controls.txtLanguage.setValue(suggestion.language);
       this.languageSuggestionReason = suggestion.reasoning;
@@ -340,14 +389,19 @@ export class EdithealthdataComponent implements OnInit {
   }
 
   onTextSelection(e: any) {
-    if (e.target.value.toLowerCase() == 'Associated symptoms'.toLowerCase()) {
+    this.applyTopicRules(e.target.value);
+  }
+
+  /** Condition / exclude-from-multi-choice defaults that follow from the Text value. */
+  private applyTopicRules(topic: string) {
+    if (topic.toLowerCase() == 'Associated symptoms'.toLowerCase()) {
       this.positiveCondition = true;
       this.negativeCondition = true;
     } else {
       this.positiveCondition = false;
       this.negativeCondition = false;
     }
-    if (this.isOtherOption(e.target.value)) {
+    if (this.isOtherOption(topic)) {
       this.healthdata.exclude_from_multi_choice = true;
       this.myForm.patchValue({ ddExcludeMultiChoice: true });
     }

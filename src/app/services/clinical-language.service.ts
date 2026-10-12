@@ -42,6 +42,53 @@ const SUGGESTION_SCHEMA = {
   additionalProperties: false,
 };
 
+export interface NodeTextSuggestion {
+  text: string;
+  reasoning: string;
+}
+
+const TEXT_SCHEMA = {
+  type: 'object',
+  properties: {
+    text: {
+      type: 'string',
+      description: 'The node Text value (the key shown in the mind map and JSON export).',
+    },
+    reasoning: {
+      type: 'string',
+      description:
+        'One short sentence explaining the choice, shown to the author.',
+    },
+  },
+  required: ['text', 'reasoning'],
+  additionalProperties: false,
+};
+
+const TEXT_SYSTEM_PROMPT = `You author the "Text" field for Intelehealth clinical protocol nodes.
+
+The author has written the Display (English) label - the wording the health worker reads on the
+mobile app. You produce the node's Text: the internal identifier/key used in the mind map and in
+the JSON export, and the value the app falls back to when no Display is set.
+
+RULES
+1. Keep the author's own words. The Text is the Display with authoring noise removed - never a
+   rewrite, a translation, or a clinical paraphrase.
+2. Strip trailing punctuation and question marks, surrounding quotes, numbering ("3. ", "a) ")
+   and trailing asterisks.
+3. KEEP bracketed input hints that the protocols use as part of the key: "[describe]",
+   "[Describe]", "(Describe)", "[Enter value]". These are meaningful in these protocols.
+4. Keep sentence case as the author wrote it. Do not Title Case, do not upper-case, do not
+   snake_case or camelCase - these keys are human-readable phrases ("Associated symptoms",
+   "Other [describe]", "Take a picture", "Site of pain").
+5. Preserve the canonical spellings the protocols already use: "Associated symptoms", "Other",
+   "Others", "Other [describe]".
+6. No patient-facing second person. "Do you have fever?" -> "Fever".
+7. Keep it short - a noun phrase where the Display is a question, the option's own words where
+   the Display is an answer option.
+8. If the Display is already a clean key, return it unchanged.
+
+Return only the field value.`;
+
 const SYSTEM_PROMPT = `You author the "Language to be shown in history note" field for Intelehealth clinical protocols.
 
 BACKGROUND
@@ -161,19 +208,76 @@ export class ClinicalLanguageService {
       );
     }
 
+    const parsed = await this.complete<ClinicalLanguageSuggestion>(
+      `${SYSTEM_PROMPT}\n\n${EXAMPLES_BLOCK}`,
+      this.describeNode(ctx),
+      'suggestion',
+      SUGGESTION_SCHEMA
+    );
+    return {
+      language: (parsed.language ?? '').trim(),
+      reasoning: parsed.reasoning ?? '',
+    };
+  }
+
+  async suggestText(ctx: {
+    path: string[];
+    display: string;
+    inputType?: string;
+    children?: string[];
+    siblings?: string[];
+  }): Promise<NodeTextSuggestion> {
+    if (!this.isConfigured) {
+      throw new Error(
+        'No OpenAI API key configured. Set openaiApiKey in src/environments/environment.ts.'
+      );
+    }
+
+    const lines = [
+      `Path: ${[...ctx.path, ctx.display].join(' > ')}`,
+      `Display (English): ${ctx.display}`,
+    ];
+    if (ctx.inputType) lines.push(`Input type: ${ctx.inputType}`);
+    if (ctx.children?.length) {
+      lines.push(`Options below this node: ${ctx.children.join(', ')}`);
+    } else {
+      lines.push('Options below this node: none (this is an answer option)');
+    }
+    if (ctx.siblings?.length) {
+      lines.push(`Sibling options: ${ctx.siblings.join(', ')}`);
+    }
+
+    const parsed = await this.complete<NodeTextSuggestion>(
+      TEXT_SYSTEM_PROMPT,
+      lines.join('\n'),
+      'node_text',
+      TEXT_SCHEMA
+    );
+    return {
+      text: (parsed.text ?? '').trim(),
+      reasoning: parsed.reasoning ?? '',
+    };
+  }
+
+  private async complete<T>(
+    systemPrompt: string,
+    userPrompt: string,
+    schemaName: string,
+    schema: Record<string, unknown>
+  ): Promise<T> {
     const { data: response, response: httpResponse } = await this.getClient()
       .responses.create({
         model: environment.openaiModel,
         input: [
-          { role: 'developer', content: `${SYSTEM_PROMPT}\n\n${EXAMPLES_BLOCK}` },
-          { role: 'user', content: this.describeNode(ctx) },
+          { role: 'developer', content: systemPrompt },
+          { role: 'user', content: userPrompt },
         ],
         text: {
           format: {
             type: 'json_schema',
-            name: 'suggestion',
+            name: schemaName,
             strict: true,
-            schema: SUGGESTION_SCHEMA,
+            schema,
           },
         },
       })
@@ -194,10 +298,8 @@ export class ClinicalLanguageService {
     }
 
     const text = this.extractText(response);
-
-    let parsed: ClinicalLanguageSuggestion;
     try {
-      parsed = JSON.parse(text);
+      return JSON.parse(text) as T;
     } catch {
       console.error('Unparseable suggestion response', response);
       throw new Error(
@@ -206,10 +308,6 @@ export class ClinicalLanguageService {
           : 'The model returned no text. See the browser console for the full response.'
       );
     }
-    return {
-      language: (parsed.language ?? '').trim(),
-      reasoning: parsed.reasoning ?? '',
-    };
   }
 
   private extractText(response: any): string {
