@@ -494,11 +494,12 @@ export class FhirService {
         const grandchildren = option.options;
 
         if (
-          this.isQuestionNode(option) ||
+          !this.isPassThroughWrapper(option) &&
+          (this.isQuestionNode(option) ||
           this.hasBareAnswerChild(option) ||
           grandchildren.every(
             (gc: any) => !gc.options || gc.options.length === 0
-          )
+          ))
         ) {
           const childItem = this.buildItem(option, item.linkId, triggering);
           if (childItem) {
@@ -558,6 +559,23 @@ export class FhirService {
 
   private isQuestionNode(node: any): boolean {
     return Object.prototype.hasOwnProperty.call(node, 'multi-choice');
+  }
+
+ 
+  private isPassThroughWrapper(node: any): boolean {
+    const options = node.options || [];
+    if (options.length !== 1) {
+      return false;
+    }
+    if (node['input-type'] || node.isRequired || this.isTrue(node['multi-choice'])) {
+      return false;
+    }
+    const child = options[0];
+    if (!child.options || child.options.length === 0) {
+      return false;
+    }
+  
+    return this.buildExtensions(node).length === 0;
   }
 
   private buildItem(
