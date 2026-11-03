@@ -429,7 +429,9 @@ export class FhirService {
     ) {
       const leafChildren: Array<any> = [];
       options.forEach((option: any) => {
-        if (option['input-type']) {
+        // Exclusive options (camera) were already added above, gated on the
+        // regular options.
+        if (option['input-type'] && !this.isTrue(option['is-exclusive-option'])) {
           const triggering = { system: CODE_SYSTEM, code: option.id };
           const childItem: any = {
             linkId: `${item.linkId}_${option.id}`,
@@ -460,7 +462,7 @@ export class FhirService {
         }
       });
       if (leafChildren.length > 0) {
-        item.item = leafChildren;
+        item.item = [...(item.item || []), ...leafChildren];
       }
       return;
     }
@@ -545,8 +547,10 @@ export class FhirService {
       }
     });
 
+    // Keep the exclusive (camera) children added above; follow-up questions
+    // must not replace them.
     if (children.length > 0) {
-      item.item = children;
+      item.item = [...children, ...(item.item || [])];
     }
   }
 
